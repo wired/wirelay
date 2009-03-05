@@ -1,0 +1,10 @@
+# ChangeLog for dev-libs/wicked
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+*wicked-9999 (05 Mar 2009)
+
+  05 Mar 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +wicked-9999.ebuild:
+  ebuild for wicked (used by awesome)
+
