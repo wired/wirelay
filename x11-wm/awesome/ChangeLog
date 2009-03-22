@@ -1,0 +1,8 @@
+# ChangeLog for x11-wm/awesome
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+  22 Mar 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  awesome-9999.ebuild:
+  awesome live ebuild from devnull
+

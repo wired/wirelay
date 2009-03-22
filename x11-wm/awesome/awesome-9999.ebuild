@@ -13,7 +13,7 @@ HOMEPAGE="http://awesome.naquadah.org/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~ppc64 ~x86 ~x86-fbsd"
+KEYWORDS=""
 IUSE="dbus doc"
 
 RDEPEND=">=dev-lang/lua-5.1
@@ -86,7 +86,7 @@ src_install() {
 		(
 			cd "${WORKDIR}"/${PN}_build/doc/html/ && dohtml -r * || die
 			mv "${D}"/usr/share/doc/${PN}/luadoc "${D}"/usr/share/doc/${PF}/html/luadoc || die
-	
+
 		)
 	fi
 	rm -rf "${D}"/usr/share/doc/${PN} || die

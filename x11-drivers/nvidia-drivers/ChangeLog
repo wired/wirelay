@@ -1,0 +1,16 @@
+# ChangeLog for x11-drivers/nvidia-drivers
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+*nvidia-drivers-180.41 (22 Mar 2009)
+
+  22 Mar 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +files/09nvidia, +files/nvidia-2.6.28.patch, +files/nvidia-169.07,
+  +files/NVIDIA_glx-defines.patch, +files/NVIDIA_glx-glheader.patch,
+  +files/NVIDIA_glx-makefile.patch, +files/NVIDIA_i2c-hwmon.patch,
+  +files/eblits/donvidia.eblit, +files/eblits/mtrr_check.eblit,
+  +files/eblits/paravirt_check.eblit, +files/eblits/src_install-libs.eblit,
+  +files/eblits/want_tls.eblit, +files/libGL.la-r2, +files/nvidia,
+  +nvidia-drivers-180.41.ebuild:
+  ebuild for nvidia's latest driver
+
