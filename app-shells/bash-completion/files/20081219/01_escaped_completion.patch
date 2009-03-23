@@ -1,0 +1,12 @@
+--- bash_completion	2008-12-19 23:20:22.000000000 +0200
++++ bash_completion	2009-03-23 02:44:37.212245134 +0200
+@@ -206,8 +206,7 @@
+ # results in the original argument
+ quote_readline()
+ {
+-	local t="${1//\\/\\\\}"
+-	echo \'${t//\'/\'\\\'\'}\' #'# Help vim syntax highlighting
++	echo \'${1//\'/\'\\\'\'}\' #'# Help vim syntax highlighting
+ }
+
+ # This function shell-dequotes the argument
