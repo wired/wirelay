@@ -1,3 +1,6 @@
 wirelay: wired's gentoo overlay
 
 for all things to come :)
+
+to add this overlay to layman use the following command:
+# layman -f -o git://github.com/wired/wirelay.git -a wirelay
