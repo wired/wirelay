@@ -10,3 +10,21 @@
  }
 
  # This function shell-dequotes the argument
+@@ -274,7 +274,7 @@ _filedir()
+ 	local toks=( ) tmp
+
+ 	toks=( ${toks[@]-} $(
+-		compgen -d -- "$(quote_readline "$cur")" | {
++		compgen -d -- "$(quote "$cur")" | {
+ 			while read -r tmp; do
+ 				# TODO: I've removed a "[ -n $tmp ] &&" before,
+ 				#       and everything works again. If this bug
+@@ -290,7 +290,7 @@ _filedir()
+ 	if [[ "$1" != -d ]]; then
+ 		xspec=${1:+"!*.$1"}
+ 		toks=( ${toks[@]-} $(
+-			compgen -f -X "$xspec" -- "$(quote_readline "$cur")" | {
++			compgen -f -X "$xspec" -- "$(quote "$cur")" | {
+ 				while read -r tmp; do
+ 					[ -n $tmp ] && echo $tmp
+ 				done
