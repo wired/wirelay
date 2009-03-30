@@ -1,0 +1,11 @@
+# ChangeLog for media-sound/amarok
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+*amarok-2.0.2 (30 Mar 2009)
+
+  30 Mar 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +files/amarok-ipod.patch, +metadata.xml, +amarok-2.0.2.ebuild:
+  copy of kde-testing's amarok ebuild, patched to use external
+  qtscriptgenerator
+
