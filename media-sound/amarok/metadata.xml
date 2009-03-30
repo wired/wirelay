@@ -43,6 +43,9 @@
 	<flag name="utils">
 		Build collection scanner shipped with <pkg>media-sound/amarok</pkg>.
 	</flag>
+	<flag name="external-qtscriptgenerator">
+		Use external qtscriptgenerator
+	</flag>
 	<!--
 	<flag name="visualization">
 		Support visualization plugins through <pkg>media-libs/libvisual</pkg>

@@ -17,11 +17,11 @@ HOMEPAGE="http://amarok.kde.org/"
 LICENSE="GPL-2"
 KEYWORDS="~amd64 ~x86"
 SLOT="2"
-IUSE="cdaudio daap debug ifp ipod mp3tunes mp4 mtp njb +semantic-desktop"
+IUSE="cdaudio daap debug ifp ipod mp3tunes mp4 mtp njb +semantic-desktop +external-qtscriptgenerator"
 SRC_URI="mirror://kde/stable/${PN}/${PV}/src/${P}.tar.bz2"
 
 DEPEND="
-	>=x11-libs/qtscriptgenerator-0.1.0
+	external-qtscriptgenerator? ( >=x11-libs/qtscriptgenerator-0.1.0 )
 	>=app-misc/strigi-0.5.7
 	|| (
 		>=dev-db/mysql-5.0[embedded,-minimal]
@@ -70,11 +70,13 @@ src_configure() {
 		-i "${S}"/src/scriptengine/generator/generator/CMakeLists.txt \
 		|| die "Removing unnecessary -DQT_WEBKIT failed."
 
-	#remove amaroks internal qtscriptgenerator (not necessary in 2.1)
-	# using ,'s as a delimiter so I don't have to escape stuff
-	sed -e 's,add_subdirectory( src/scriptengine/generator ),,g' \
-		-i "${S}/CMakeLists.txt" \
-		|| die "Removing internal qtscriptgenerator failed."
+	if use external-qtscriptgenerator; then
+		# remove amaroks internal qtscriptgenerator (not necessary in 2.1)
+		# using ,'s as a delimiter so I don't have to escape stuff
+		sed -e 's,add_subdirectory( src/scriptengine/generator ),,g' \
+			-i "${S}/CMakeLists.txt" \
+			|| die "Removing internal qtscriptgenerator failed."
+	fi
 
 	mycmakeargs="${mycmakeargs}
 		$(cmake-utils_use_with cdaudio KdeMultimedia)
