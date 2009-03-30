@@ -1,0 +1,10 @@
+# ChangeLog for dev-db/mysql
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+*mysql-5.0.76 (30 Mar 2009)
+
+  30 Mar 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +files/204_all_embedded-library-shared.5.0.76.patch, +mysql-5.0.76.ebuild:
+  jmbsvicetto shared embedded mysql lib patch =]
+

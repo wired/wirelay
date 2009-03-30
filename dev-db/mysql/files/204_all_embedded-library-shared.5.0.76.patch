@@ -1,0 +1,1350 @@
+diff -ur mysql-5.0.76-old/client/Makefile.am mysql-5.0.76/client/Makefile.am
+--- mysql-5.0.76-old/client/Makefile.am	2009-01-15 16:44:51.000000000 -0100
++++ mysql-5.0.76/client/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -37,7 +37,7 @@
+ 				$(top_srcdir)/mysys/my_copy.c \
+ 				$(top_srcdir)/mysys/my_mkdir.c
+ 
+-mysqltest_LDADD =		$(top_builddir)/regex/libregex.a $(LDADD)
++mysqltest_LDADD =		$(top_builddir)/regex/libregex.la $(LDADD)
+ mysqlbinlog_SOURCES =   	mysqlbinlog.cc \
+ 				$(top_srcdir)/mysys/mf_tempdir.c \
+ 				$(top_srcdir)/mysys/my_new.cc
+diff -ur mysql-5.0.76-old/config/ac-macros/ha_innodb.m4 mysql-5.0.76/config/ac-macros/ha_innodb.m4
+--- mysql-5.0.76-old/config/ac-macros/ha_innodb.m4	2009-01-15 16:44:57.000000000 -0100
++++ mysql-5.0.76/config/ac-macros/ha_innodb.m4	2009-03-28 10:41:48.000000000 -0100
+@@ -25,40 +25,35 @@
+ dnl Some libs are listed several times, in order for gcc to sort out
+ dnl circular references.
+       innodb_libs="\
+- \$(top_builddir)/innobase/usr/libusr.a\
+- \$(top_builddir)/innobase/srv/libsrv.a\
+- \$(top_builddir)/innobase/dict/libdict.a\
+- \$(top_builddir)/innobase/que/libque.a\
+- \$(top_builddir)/innobase/srv/libsrv.a\
+- \$(top_builddir)/innobase/ibuf/libibuf.a\
+- \$(top_builddir)/innobase/row/librow.a\
+- \$(top_builddir)/innobase/pars/libpars.a\
+- \$(top_builddir)/innobase/btr/libbtr.a\
+- \$(top_builddir)/innobase/trx/libtrx.a\
+- \$(top_builddir)/innobase/read/libread.a\
+- \$(top_builddir)/innobase/usr/libusr.a\
+- \$(top_builddir)/innobase/buf/libbuf.a\
+- \$(top_builddir)/innobase/ibuf/libibuf.a\
+- \$(top_builddir)/innobase/eval/libeval.a\
+- \$(top_builddir)/innobase/log/liblog.a\
+- \$(top_builddir)/innobase/fsp/libfsp.a\
+- \$(top_builddir)/innobase/fut/libfut.a\
+- \$(top_builddir)/innobase/fil/libfil.a\
+- \$(top_builddir)/innobase/lock/liblock.a\
+- \$(top_builddir)/innobase/mtr/libmtr.a\
+- \$(top_builddir)/innobase/page/libpage.a\
+- \$(top_builddir)/innobase/rem/librem.a\
+- \$(top_builddir)/innobase/thr/libthr.a\
+- \$(top_builddir)/innobase/sync/libsync.a\
+- \$(top_builddir)/innobase/data/libdata.a\
+- \$(top_builddir)/innobase/mach/libmach.a\
+- \$(top_builddir)/innobase/ha/libha.a\
+- \$(top_builddir)/innobase/dyn/libdyn.a\
+- \$(top_builddir)/innobase/mem/libmem.a\
+- \$(top_builddir)/innobase/sync/libsync.a\
+- \$(top_builddir)/innobase/ut/libut.a\
+- \$(top_builddir)/innobase/os/libos.a\
+- \$(top_builddir)/innobase/ut/libut.a"
++ \$(top_builddir)/innobase/usr/libusr.la\
++ \$(top_builddir)/innobase/srv/libsrv.la\
++ \$(top_builddir)/innobase/dict/libdict.la\
++ \$(top_builddir)/innobase/que/libque.la\
++ \$(top_builddir)/innobase/ibuf/libibuf.la\
++ \$(top_builddir)/innobase/row/librow.la\
++ \$(top_builddir)/innobase/pars/libpars.la\
++ \$(top_builddir)/innobase/btr/libbtr.la\
++ \$(top_builddir)/innobase/trx/libtrx.la\
++ \$(top_builddir)/innobase/read/libread.la\
++ \$(top_builddir)/innobase/buf/libbuf.la\
++ \$(top_builddir)/innobase/eval/libeval.la\
++ \$(top_builddir)/innobase/log/liblog.la\
++ \$(top_builddir)/innobase/fsp/libfsp.la\
++ \$(top_builddir)/innobase/fut/libfut.la\
++ \$(top_builddir)/innobase/fil/libfil.la\
++ \$(top_builddir)/innobase/lock/liblock.la\
++ \$(top_builddir)/innobase/mtr/libmtr.la\
++ \$(top_builddir)/innobase/page/libpage.la\
++ \$(top_builddir)/innobase/rem/librem.la\
++ \$(top_builddir)/innobase/thr/libthr.la\
++ \$(top_builddir)/innobase/sync/libsync.la\
++ \$(top_builddir)/innobase/data/libdata.la\
++ \$(top_builddir)/innobase/mach/libmach.la\
++ \$(top_builddir)/innobase/ha/libha.la\
++ \$(top_builddir)/innobase/dyn/libdyn.la\
++ \$(top_builddir)/innobase/mem/libmem.la\
++ \$(top_builddir)/innobase/ut/libut.la\
++ \$(top_builddir)/innobase/os/libos.la"
+ 
+       AC_CHECK_LIB(rt, aio_read, [innodb_system_libs="-lrt"])
+       ;;
+diff -ur mysql-5.0.76-old/configure.in mysql-5.0.76/configure.in
+--- mysql-5.0.76-old/configure.in	2009-01-15 16:44:57.000000000 -0100
++++ mysql-5.0.76/configure.in	2009-03-27 02:16:19.000000000 -0100
+@@ -253,7 +253,7 @@
+ fi
+ 
+ # Still need ranlib for readline; local static use only so no libtool.
+-AC_PROG_RANLIB
++#AC_PROG_RANLIB
+ # We use libtool
+ #AC_LIBTOOL_WIN32_DLL
+ AC_PROG_LIBTOOL
+@@ -574,6 +574,9 @@
+ # We need an ANSI C compiler
+ AM_PROG_CC_STDC
+ 
++# Testing as sugggested by Diego
++AM_PROG_CC_C_O
++
+ # We need an assembler, too
+ AM_PROG_AS
+ CCASFLAGS="$CCASFLAGS $ASFLAGS"
+@@ -2692,9 +2695,9 @@
+ 
+ if test "$THREAD_SAFE_CLIENT" = "no"
+ then
+-  sql_client_dirs="strings regex mysys dbug extra libmysql client"
++  sql_client_dirs="strings regex dbug mysys extra libmysql client"
+ else
+-  sql_client_dirs="strings regex mysys dbug extra libmysql libmysql_r client"
++  sql_client_dirs="strings regex dbug mysys extra libmysql libmysql_r client"
+   linked_client_targets="$linked_client_targets linked_libmysql_r_sources"
+   AC_CONFIG_FILES(libmysql_r/Makefile)
+   AC_DEFINE([THREAD_SAFE_CLIENT], [1], [Should be client be thread safe])
+@@ -2723,13 +2726,11 @@
+ export CC CXX CFLAGS CXXFLAGS LD LDFLAGS AR
+ ac_configure_args="$ac_configure_args CFLAGS='$CFLAGS' CXXFLAGS='$CXXFLAGS'"
+ 
++AM_CONDITIONAL([NEED_THREADS], [test x"$with_server" != xno -o x"$THREAD_SAFE_CLIENT" != xno])
+ if test "$with_server" != "no" -o "$THREAD_SAFE_CLIENT" != "no"
+ then
+   AC_DEFINE([THREAD], [1],
+             [Define if you want to have threaded code. This may be undef on client code])
+-  # Avoid _PROGRAMS names
+-  THREAD_LOBJECTS="thr_alarm.o thr_lock.o thr_mutex.o thr_rwlock.o my_pthread.o my_thr_init.o mf_keycache.o"
+-  AC_SUBST(THREAD_LOBJECTS)
+ fi
+ 
+ if test "$with_server" = "no"
+@@ -2737,7 +2738,7 @@
+   AM_CONDITIONAL([BUILD_INNODB_TOOLS], [false])
+ else
+   server_scripts="mysqld_safe mysql_install_db"
+-  sql_server_dirs="strings mysys dbug extra regex"
++  sql_server_dirs="strings dbug mysys extra regex"
+ 
+ 
+   #
+diff -ur mysql-5.0.76-old/dbug/Makefile.am mysql-5.0.76/dbug/Makefile.am
+--- mysql-5.0.76-old/dbug/Makefile.am	2009-01-15 16:44:57.000000000 -0100
++++ mysql-5.0.76/dbug/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -16,10 +16,9 @@
+ # MA 02111-1307, USA
+ 
+ INCLUDES =              -I$(top_builddir)/include -I$(top_srcdir)/include
+-LDADD =                 libdbug.a ../mysys/libmysys.a ../strings/libmystrings.a
+-pkglib_LIBRARIES =      libdbug.a
++noinst_LTLIBRARIES =    libdbug.la
+ noinst_HEADERS =        dbug_long.h
+-libdbug_a_SOURCES =     dbug.c sanity.c
++libdbug_la_SOURCES =    dbug.c sanity.c
+ EXTRA_DIST =            example1.c example2.c example3.c \
+                         user.r monty.doc readme.prof dbug_add_tags.pl \
+                         my_main.c main.c factorial.c dbug_analyze.c \
+@@ -31,11 +30,11 @@
+ 
+ 
+ # Must be linked with libs that are not compiled yet
+-noinst_PROGRAMS =       factorial dbug_analyze
++EXTRA_PROGRAMS =       factorial dbug_analyze
+ factorial_SOURCES =     my_main.c factorial.c
+ dbug_analyze_SOURCES =  dbug_analyze.c
+ 
+-all:            user.t user.ps
++check-local:            user.t user.ps
+ 
+ user.t:         user.r $(NROFF_INC)
+ 		-nroff -mm user.r > $@
+diff -ur mysql-5.0.76-old/extra/Makefile.am mysql-5.0.76/extra/Makefile.am
+--- mysql-5.0.76-old/extra/Makefile.am	2009-01-15 16:44:58.000000000 -0100
++++ mysql-5.0.76/extra/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -15,8 +15,7 @@
+ 
+ INCLUDES =		-I$(top_builddir)/include -I$(top_srcdir)/include \
+ 			@ndbcluster_includes@ -I$(top_srcdir)/sql
+-LDADD =			@CLIENT_EXTRA_LDFLAGS@ ../mysys/libmysys.a \
+-			../dbug/libdbug.a ../strings/libmystrings.a \
++LDADD =			@CLIENT_EXTRA_LDFLAGS@ ../mysys/libmysys.la \
+ 			$(ZLIB_LIBS)
+ BUILT_SOURCES=		$(top_builddir)/include/mysqld_error.h \
+                         $(top_builddir)/include/sql_state.h \
+diff -ur mysql-5.0.76-old/heap/Makefile.am mysql-5.0.76/heap/Makefile.am
+--- mysql-5.0.76-old/heap/Makefile.am	2009-01-15 16:45:05.000000000 -0100
++++ mysql-5.0.76/heap/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -14,14 +14,13 @@
+ # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
+ INCLUDES =		-I$(top_builddir)/include -I$(top_srcdir)/include 
+-LDADD =			libheap.a ../mysys/libmysys.a ../dbug/libdbug.a \
+-			../strings/libmystrings.a
+-pkglib_LIBRARIES =	libheap.a
++LDADD =			libheap.la ../mysys/libmysys.la
++pkglib_LTLIBRARIES =	libheap.la
+ noinst_PROGRAMS	=	hp_test1 hp_test2
+ hp_test1_LDFLAGS = @NOINST_LDFLAGS@
+ hp_test2_LDFLAGS = @NOINST_LDFLAGS@
+ noinst_HEADERS =	heapdef.h
+-libheap_a_SOURCES =	hp_open.c hp_extra.c hp_close.c hp_panic.c hp_info.c \
++libheap_la_SOURCES =	hp_open.c hp_extra.c hp_close.c hp_panic.c hp_info.c \
+ 			hp_rrnd.c hp_scan.c hp_update.c hp_write.c hp_delete.c \
+ 			hp_rsame.c hp_create.c hp_rename.c hp_rfirst.c \
+ 			hp_rnext.c hp_rlast.c hp_rprev.c hp_clear.c \
+diff -ur mysql-5.0.76-old/innobase/btr/Makefile.am mysql-5.0.76/innobase/btr/Makefile.am
+--- mysql-5.0.76-old/innobase/btr/Makefile.am	2009-01-15 16:45:09.000000000 -0100
++++ mysql-5.0.76/innobase/btr/Makefile.am	2009-03-26 23:37:17.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libbtr.a
++noinst_LTLIBRARIES =	libbtr.la
+ 
+-libbtr_a_SOURCES =	btr0btr.c btr0cur.c btr0pcur.c btr0sea.c
++libbtr_la_SOURCES =	btr0btr.c btr0cur.c btr0pcur.c btr0sea.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/buf/Makefile.am mysql-5.0.76/innobase/buf/Makefile.am
+--- mysql-5.0.76-old/innobase/buf/Makefile.am	2009-01-15 16:45:09.000000000 -0100
++++ mysql-5.0.76/innobase/buf/Makefile.am	2009-03-16 01:42:05.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libbuf.a
++noinst_LTLIBRARIES =	libbuf.la
+ 
+-libbuf_a_SOURCES =	buf0buf.c buf0flu.c buf0lru.c buf0rea.c
++libbuf_la_SOURCES =	buf0buf.c buf0flu.c buf0lru.c buf0rea.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/configure.in mysql-5.0.76/innobase/configure.in
+--- mysql-5.0.76-old/innobase/configure.in	2009-01-15 16:45:09.000000000 -0100
++++ mysql-5.0.76/innobase/configure.in	2009-03-28 17:27:00.000000000 -0100
+@@ -32,7 +32,7 @@
+ CXXFLAGS="$CXXFLAGS "
+ 
+ AC_PROG_CC
+-AC_PROG_RANLIB
++#AC_PROG_RANLIB
+ AC_PROG_INSTALL
+ AC_PROG_LIBTOOL
+ AC_CHECK_HEADERS(aio.h sched.h)
+@@ -126,14 +126,4 @@
+ fi
+ AC_SUBST(ARFLAGS)
+ 
+-AC_OUTPUT(Makefile os/Makefile ut/Makefile btr/Makefile dnl
+-		buf/Makefile data/Makefile dnl
+-		dict/Makefile dyn/Makefile dnl
+-		eval/Makefile fil/Makefile fsp/Makefile fut/Makefile dnl
+-		ha/Makefile ibuf/Makefile include/Makefile dnl
+-		lock/Makefile log/Makefile dnl
+-		mach/Makefile mem/Makefile mtr/Makefile dnl
+-		page/Makefile pars/Makefile que/Makefile dnl
+-		read/Makefile rem/Makefile row/Makefile dnl
+-		srv/Makefile sync/Makefile thr/Makefile trx/Makefile dnl
+-		usr/Makefile)
++AC_OUTPUT(Makefile)
+diff -ur mysql-5.0.76-old/innobase/data/Makefile.am mysql-5.0.76/innobase/data/Makefile.am
+--- mysql-5.0.76-old/innobase/data/Makefile.am	2009-01-15 16:45:09.000000000 -0100
++++ mysql-5.0.76/innobase/data/Makefile.am	2009-03-16 01:42:18.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libdata.a
++noinst_LTLIBRARIES =	libdata.la
+ 
+-libdata_a_SOURCES =	data0data.c data0type.c
++libdata_la_SOURCES =	data0data.c data0type.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/dict/Makefile.am mysql-5.0.76/innobase/dict/Makefile.am
+--- mysql-5.0.76-old/innobase/dict/Makefile.am	2009-01-15 16:45:10.000000000 -0100
++++ mysql-5.0.76/innobase/dict/Makefile.am	2009-03-16 01:42:34.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libdict.a
++noinst_LTLIBRARIES =	libdict.la
+ 
+-libdict_a_SOURCES =	dict0boot.c dict0crea.c dict0dict.c dict0load.c\
++libdict_la_SOURCES =	dict0boot.c dict0crea.c dict0dict.c dict0load.c\
+ 			dict0mem.c
+ 
+ EXTRA_PROGRAMS =	
+diff -ur mysql-5.0.76-old/innobase/dyn/Makefile.am mysql-5.0.76/innobase/dyn/Makefile.am
+--- mysql-5.0.76-old/innobase/dyn/Makefile.am	2009-01-15 16:45:10.000000000 -0100
++++ mysql-5.0.76/innobase/dyn/Makefile.am	2009-03-16 01:42:52.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libdyn.a
++noinst_LTLIBRARIES =	libdyn.la
+ 
+-libdyn_a_SOURCES =	dyn0dyn.c
++libdyn_la_SOURCES =	dyn0dyn.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/eval/Makefile.am mysql-5.0.76/innobase/eval/Makefile.am
+--- mysql-5.0.76-old/innobase/eval/Makefile.am	2009-01-15 16:45:10.000000000 -0100
++++ mysql-5.0.76/innobase/eval/Makefile.am	2009-03-16 01:43:06.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libeval.a
++noinst_LTLIBRARIES =	libeval.la
+ 
+-libeval_a_SOURCES =	eval0eval.c eval0proc.c
++libeval_la_SOURCES =	eval0eval.c eval0proc.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/fil/Makefile.am mysql-5.0.76/innobase/fil/Makefile.am
+--- mysql-5.0.76-old/innobase/fil/Makefile.am	2009-01-15 16:45:10.000000000 -0100
++++ mysql-5.0.76/innobase/fil/Makefile.am	2009-03-16 01:43:30.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libfil.a
++noinst_LTLIBRARIES =	libfil.la
+ 
+-libfil_a_SOURCES =	fil0fil.c
++libfil_la_SOURCES =	fil0fil.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/fsp/Makefile.am mysql-5.0.76/innobase/fsp/Makefile.am
+--- mysql-5.0.76-old/innobase/fsp/Makefile.am	2009-01-15 16:45:10.000000000 -0100
++++ mysql-5.0.76/innobase/fsp/Makefile.am	2009-03-16 01:43:42.000000000 -0100
+@@ -16,9 +16,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libfsp.a
++noinst_LTLIBRARIES =	libfsp.la
+ 
+-libfsp_a_SOURCES =	fsp0fsp.c
++libfsp_la_SOURCES =	fsp0fsp.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/fut/Makefile.am mysql-5.0.76/innobase/fut/Makefile.am
+--- mysql-5.0.76-old/innobase/fut/Makefile.am	2009-01-15 16:45:10.000000000 -0100
++++ mysql-5.0.76/innobase/fut/Makefile.am	2009-03-16 01:43:55.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libfut.a
++noinst_LTLIBRARIES =	libfut.la
+ 
+-libfut_a_SOURCES =	fut0fut.c fut0lst.c
++libfut_la_SOURCES =	fut0fut.c fut0lst.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/ha/Makefile.am mysql-5.0.76/innobase/ha/Makefile.am
+--- mysql-5.0.76-old/innobase/ha/Makefile.am	2009-01-15 16:45:10.000000000 -0100
++++ mysql-5.0.76/innobase/ha/Makefile.am	2009-03-16 01:44:11.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libha.a
++noinst_LTLIBRARIES =	libha.la
+ 
+-libha_a_SOURCES =	ha0ha.c hash0hash.c
++libha_la_SOURCES =	ha0ha.c hash0hash.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/ibuf/Makefile.am mysql-5.0.76/innobase/ibuf/Makefile.am
+--- mysql-5.0.76-old/innobase/ibuf/Makefile.am	2009-01-15 16:45:11.000000000 -0100
++++ mysql-5.0.76/innobase/ibuf/Makefile.am	2009-03-16 01:44:24.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libibuf.a
++noinst_LTLIBRARIES =	libibuf.la
+ 
+-libibuf_a_SOURCES =	ibuf0ibuf.c
++libibuf_la_SOURCES =	ibuf0ibuf.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/lock/Makefile.am mysql-5.0.76/innobase/lock/Makefile.am
+--- mysql-5.0.76-old/innobase/lock/Makefile.am	2009-01-15 16:45:16.000000000 -0100
++++ mysql-5.0.76/innobase/lock/Makefile.am	2009-03-16 01:44:48.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	liblock.a
++noinst_LTLIBRARIES =	liblock.la
+ 
+-liblock_a_SOURCES =	lock0lock.c
++liblock_la_SOURCES =	lock0lock.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/log/Makefile.am mysql-5.0.76/innobase/log/Makefile.am
+--- mysql-5.0.76-old/innobase/log/Makefile.am	2009-01-15 16:45:16.000000000 -0100
++++ mysql-5.0.76/innobase/log/Makefile.am	2009-03-16 01:45:02.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	liblog.a
++noinst_LTLIBRARIES =	liblog.la
+ 
+-liblog_a_SOURCES =	log0log.c log0recv.c
++liblog_la_SOURCES =	log0log.c log0recv.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/mach/Makefile.am mysql-5.0.76/innobase/mach/Makefile.am
+--- mysql-5.0.76-old/innobase/mach/Makefile.am	2009-01-15 16:45:17.000000000 -0100
++++ mysql-5.0.76/innobase/mach/Makefile.am	2009-03-16 01:45:14.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libmach.a
++noinst_LTLIBRARIES =	libmach.la
+ 
+-libmach_a_SOURCES =	mach0data.c
++libmach_la_SOURCES =	mach0data.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/Makefile.am mysql-5.0.76/innobase/Makefile.am
+--- mysql-5.0.76-old/innobase/Makefile.am	2009-01-15 16:45:09.000000000 -0100
++++ mysql-5.0.76/innobase/Makefile.am	2009-03-28 21:49:37.000000000 -0100
+@@ -15,14 +15,35 @@
+ 
+ # Process this file with automake to create Makefile.in
+ 
+-AUTOMAKE_OPTIONS =	foreign
+-TAR =			gtar
+-
+ noinst_HEADERS = ib_config.h
+ 
+-SUBDIRS =		os ut btr buf data dict dyn eval fil fsp fut \
+-			ha ibuf include lock log mach mem mtr page \
+-			pars que read rem row srv sync thr trx usr
++INCLUDES = -I$(srcdir)/include -I$(srcdir)/../include
++
++pkglib_LTLIBRARIES = libinnobase.la
++
++libinnobase_la_SOURCES = btr/btr0btr.c btr/btr0cur.c \
++	btr/btr0pcur.c btr/btr0sea.c buf/buf0buf.c buf/buf0flu.c \
++	buf/buf0lru.c buf/buf0rea.c data/data0data.c data/data0type.c \
++	dict/dict0boot.c dict/dict0crea.c dict/dict0dict.c \
++	dict/dict0load.c dict/dict0mem.c dyn/dyn0dyn.c \
++	eval/eval0eval.c eval/eval0proc.c fil/fil0fil.c \
++	fsp/fsp0fsp.c fut/fut0fut.c fut/fut0lst.c ha/ha0ha.c \
++	ha/hash0hash.c ibuf/ibuf0ibuf.c lock/lock0lock.c \
++	log/log0log.c log/log0recv.c mach/mach0data.c \
++	mem/mem0mem.c mem/mem0pool.c mtr/mtr0mtr.c mtr/mtr0log.c \
++	os/os0proc.c os/os0sync.c os/os0thread.c os/os0file.c \
++	page/page0page.c page/page0cur.c pars/pars0grm.c pars/lexyy.c \
++	pars/pars0opt.c pars/pars0pars.c pars/pars0sym.c \
++	que/que0que.c read/read0read.c rem/rem0rec.c rem/rem0cmp.c \
++	row/row0ins.c row/row0mysql.c row/row0purge.c row/row0row.c \
++	row/row0sel.c row/row0uins.c row/row0umod.c row/row0undo.c \
++	row/row0upd.c row/row0vers.c srv/srv0srv.c srv/srv0que.c \
++	srv/srv0start.c sync/sync0arr.c sync/sync0rw.c \
++	sync/sync0sync.c thr/thr0loc.c trx/trx0purge.c \
++	trx/trx0rec.c trx/trx0roll.c trx/trx0rseg.c trx/trx0sys.c \
++	trx/trx0trx.c trx/trx0undo.c usr/usr0sess.c ut/ut0byte.c \
++	ut/ut0dbg.c ut/ut0mem.c ut/ut0rnd.c ut/ut0ut.c
++
+ EXTRA_DIST = CMakeLists.txt
+ 
+ # Don't update the files from bitkeeper
+diff -ur mysql-5.0.76-old/innobase/mem/Makefile.am mysql-5.0.76/innobase/mem/Makefile.am
+--- mysql-5.0.76-old/innobase/mem/Makefile.am	2009-01-15 16:45:17.000000000 -0100
++++ mysql-5.0.76/innobase/mem/Makefile.am	2009-03-16 01:45:28.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libmem.a
++noinst_LTLIBRARIES =	libmem.la
+ 
+-libmem_a_SOURCES =	mem0mem.c mem0pool.c
++libmem_la_SOURCES =	mem0mem.c mem0pool.c
+ 
+ EXTRA_DIST =		mem0dbg.c
+ 
+diff -ur mysql-5.0.76-old/innobase/mtr/Makefile.am mysql-5.0.76/innobase/mtr/Makefile.am
+--- mysql-5.0.76-old/innobase/mtr/Makefile.am	2009-01-15 16:45:17.000000000 -0100
++++ mysql-5.0.76/innobase/mtr/Makefile.am	2009-03-16 01:45:44.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libmtr.a
++noinst_LTLIBRARIES =	libmtr.la
+ 
+-libmtr_a_SOURCES =	mtr0mtr.c mtr0log.c
++libmtr_la_SOURCES =	mtr0mtr.c mtr0log.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/os/Makefile.am mysql-5.0.76/innobase/os/Makefile.am
+--- mysql-5.0.76-old/innobase/os/Makefile.am	2009-01-15 16:45:17.000000000 -0100
++++ mysql-5.0.76/innobase/os/Makefile.am	2009-03-16 01:46:10.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libos.a
++noinst_LTLIBRARIES =	libos.la
+ 
+-libos_a_SOURCES =	os0proc.c os0sync.c os0thread.c os0file.c
++libos_la_SOURCES =	os0proc.c os0sync.c os0thread.c os0file.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/page/Makefile.am mysql-5.0.76/innobase/page/Makefile.am
+--- mysql-5.0.76-old/innobase/page/Makefile.am	2009-01-15 16:45:17.000000000 -0100
++++ mysql-5.0.76/innobase/page/Makefile.am	2009-03-16 01:46:25.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libpage.a
++noinst_LTLIBRARIES =	libpage.la
+ 
+-libpage_a_SOURCES =	page0page.c page0cur.c
++libpage_la_SOURCES =	page0page.c page0cur.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/pars/Makefile.am mysql-5.0.76/innobase/pars/Makefile.am
+--- mysql-5.0.76-old/innobase/pars/Makefile.am	2009-01-15 16:45:17.000000000 -0100
++++ mysql-5.0.76/innobase/pars/Makefile.am	2009-03-16 01:46:51.000000000 -0100
+@@ -15,11 +15,11 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libpars.a
++noinst_LTLIBRARIES =	libpars.la
+ 
+ noinst_HEADERS =	pars0grm.h
+ 
+-libpars_a_SOURCES =	pars0grm.c lexyy.c pars0opt.c pars0pars.c pars0sym.c
++libpars_la_SOURCES =	pars0grm.c lexyy.c pars0opt.c pars0pars.c pars0sym.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/que/Makefile.am mysql-5.0.76/innobase/que/Makefile.am
+--- mysql-5.0.76-old/innobase/que/Makefile.am	2009-01-15 16:45:18.000000000 -0100
++++ mysql-5.0.76/innobase/que/Makefile.am	2009-03-27 03:55:52.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libque.a
++noinst_LTLIBRARIES =	libque.la
+ 
+-libque_a_SOURCES =	que0que.c
++libque_la_SOURCES =	que0que.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/read/Makefile.am mysql-5.0.76/innobase/read/Makefile.am
+--- mysql-5.0.76-old/innobase/read/Makefile.am	2009-01-15 16:45:18.000000000 -0100
++++ mysql-5.0.76/innobase/read/Makefile.am	2009-03-16 01:47:22.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libread.a
++noinst_LTLIBRARIES =	libread.la
+ 
+-libread_a_SOURCES =	read0read.c
++libread_la_SOURCES =	read0read.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/rem/Makefile.am mysql-5.0.76/innobase/rem/Makefile.am
+--- mysql-5.0.76-old/innobase/rem/Makefile.am	2009-01-15 16:45:18.000000000 -0100
++++ mysql-5.0.76/innobase/rem/Makefile.am	2009-03-16 01:47:48.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	librem.a
++noinst_LTLIBRARIES =	librem.la
+ 
+-librem_a_SOURCES =	rem0rec.c rem0cmp.c
++librem_la_SOURCES =	rem0rec.c rem0cmp.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/row/Makefile.am mysql-5.0.76/innobase/row/Makefile.am
+--- mysql-5.0.76-old/innobase/row/Makefile.am	2009-01-15 16:45:18.000000000 -0100
++++ mysql-5.0.76/innobase/row/Makefile.am	2009-03-16 01:48:06.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	librow.a
++noinst_LTLIBRARIES =	librow.la
+ 
+-librow_a_SOURCES =	row0ins.c row0mysql.c row0purge.c row0row.c row0sel.c\
++librow_la_SOURCES =	row0ins.c row0mysql.c row0purge.c row0row.c row0sel.c\
+ 			row0uins.c row0umod.c row0undo.c row0upd.c row0vers.c
+ 
+ EXTRA_PROGRAMS =	
+diff -ur mysql-5.0.76-old/innobase/srv/Makefile.am mysql-5.0.76/innobase/srv/Makefile.am
+--- mysql-5.0.76-old/innobase/srv/Makefile.am	2009-01-15 16:45:18.000000000 -0100
++++ mysql-5.0.76/innobase/srv/Makefile.am	2009-03-16 01:48:22.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libsrv.a
++noinst_LTLIBRARIES =	libsrv.la
+ 
+-libsrv_a_SOURCES =	srv0srv.c srv0que.c srv0start.c
++libsrv_la_SOURCES =	srv0srv.c srv0que.c srv0start.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/sync/Makefile.am mysql-5.0.76/innobase/sync/Makefile.am
+--- mysql-5.0.76-old/innobase/sync/Makefile.am	2009-01-15 16:45:19.000000000 -0100
++++ mysql-5.0.76/innobase/sync/Makefile.am	2009-03-16 01:48:36.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libsync.a
++noinst_LTLIBRARIES =	libsync.la
+ 
+-libsync_a_SOURCES =	sync0arr.c sync0rw.c sync0sync.c
++libsync_la_SOURCES =	sync0arr.c sync0rw.c sync0sync.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/thr/Makefile.am mysql-5.0.76/innobase/thr/Makefile.am
+--- mysql-5.0.76-old/innobase/thr/Makefile.am	2009-01-15 16:45:19.000000000 -0100
++++ mysql-5.0.76/innobase/thr/Makefile.am	2009-03-16 01:48:48.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libthr.a
++noinst_LTLIBRARIES =	libthr.la
+ 
+-libthr_a_SOURCES =	thr0loc.c
++libthr_la_SOURCES =	thr0loc.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/trx/Makefile.am mysql-5.0.76/innobase/trx/Makefile.am
+--- mysql-5.0.76-old/innobase/trx/Makefile.am	2009-01-15 16:45:19.000000000 -0100
++++ mysql-5.0.76/innobase/trx/Makefile.am	2009-03-16 01:49:00.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libtrx.a
++noinst_LTLIBRARIES =	libtrx.la
+ 
+-libtrx_a_SOURCES =	trx0purge.c trx0rec.c trx0roll.c trx0rseg.c\
++libtrx_la_SOURCES =	trx0purge.c trx0rec.c trx0roll.c trx0rseg.c\
+ 			trx0sys.c trx0trx.c trx0undo.c
+ 
+ EXTRA_PROGRAMS =	
+diff -ur mysql-5.0.76-old/innobase/usr/Makefile.am mysql-5.0.76/innobase/usr/Makefile.am
+--- mysql-5.0.76-old/innobase/usr/Makefile.am	2009-01-15 16:45:19.000000000 -0100
++++ mysql-5.0.76/innobase/usr/Makefile.am	2009-03-16 01:49:13.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libusr.a
++noinst_LTLIBRARIES =	libusr.la
+ 
+-libusr_a_SOURCES =	usr0sess.c
++libusr_la_SOURCES =	usr0sess.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/innobase/ut/Makefile.am mysql-5.0.76/innobase/ut/Makefile.am
+--- mysql-5.0.76-old/innobase/ut/Makefile.am	2009-01-15 16:45:19.000000000 -0100
++++ mysql-5.0.76/innobase/ut/Makefile.am	2009-03-16 01:49:27.000000000 -0100
+@@ -15,9 +15,9 @@
+ 
+ include ../include/Makefile.i
+ 
+-noinst_LIBRARIES =	libut.a
++noinst_LTLIBRARIES =	libut.la
+ 
+-libut_a_SOURCES =	ut0byte.c ut0dbg.c ut0mem.c ut0rnd.c ut0ut.c
++libut_la_SOURCES =	ut0byte.c ut0dbg.c ut0mem.c ut0rnd.c ut0ut.c
+ 
+ EXTRA_PROGRAMS =	
+ 
+diff -ur mysql-5.0.76-old/libmysql/Makefile.am mysql-5.0.76/libmysql/Makefile.am
+--- mysql-5.0.76-old/libmysql/Makefile.am	2009-01-15 16:45:19.000000000 -0100
++++ mysql-5.0.76/libmysql/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -106,8 +106,8 @@
+ 	echo "# This file is autogenerated from Makefile.am" >> $$dir/Makefile; \
+ 	echo 'CFLAGS=	-I. -DUNDEF_THREADS_HACK' >>$$dir/Makefile; \
+ 	echo "obj=$$objs"  >>$$dir/Makefile; \
+-	echo 'all: libmysql.a'  >>$$dir/Makefile; \
+-	echo 'libmysql.a: $$(obj)'  >>$$dir/Makefile; \
++	echo 'all: libmysql.la'  >>$$dir/Makefile; \
++	echo 'libmysql.la: $$(obj)'  >>$$dir/Makefile; \
+ 	echo '	$$(AR) r $$@ $$?'  >>$$dir/Makefile; \
+ 	gtar cvzf $$dir.tar.gz $$dir; \
+ 	cd $$dir; gmake
+diff -ur mysql-5.0.76-old/libmysqld/examples/Makefile.am mysql-5.0.76/libmysqld/examples/Makefile.am
+--- mysql-5.0.76-old/libmysqld/examples/Makefile.am	2009-01-15 16:45:20.000000000 -0100
++++ mysql-5.0.76/libmysqld/examples/Makefile.am	2009-03-28 19:34:54.000000000 -0100
+@@ -35,12 +35,12 @@
+ 		-I$(top_srcdir) -I$(top_srcdir)/client -I$(top_srcdir)/regex \
+ 		$(openssl_includes)
+ LIBS =		@LIBS@ @WRAPLIBS@ @CLIENT_LIBS@ $(yassl_libs)
+-LDADD =		@CLIENT_EXTRA_LDFLAGS@ ../libmysqld.a @innodb_system_libs@ @LIBDL@ $(CXXLDFLAGS) \
++LDADD =		@CLIENT_EXTRA_LDFLAGS@ ../libmysqld.la @innodb_system_libs@ @LIBDL@ $(CXXLDFLAGS) \
+                 @NDB_SCI_LIBS@
+ 
+ mysqltest_embedded_LINK = $(CXXLINK)
+ mysqltest_embedded_SOURCES =	mysqltest.c
+-mysqltest_embedded_LDADD =	$(LDADD) $(top_builddir)/regex/libregex.a
++mysqltest_embedded_LDADD =	$(LDADD) $(top_builddir)/regex/libregex.la
+ 
+ mysql_SOURCES = mysql.cc readline.cc completion_hash.cc \
+                 my_readline.h sql_string.h completion_hash.h
+diff -ur mysql-5.0.76-old/libmysqld/Makefile.am mysql-5.0.76/libmysqld/Makefile.am
+--- mysql-5.0.76-old/libmysqld/Makefile.am	2009-01-15 16:45:20.000000000 -0100
++++ mysql-5.0.76/libmysqld/Makefile.am	2009-03-28 17:47:37.000000000 -0100
+@@ -32,10 +32,10 @@
+ 			-I$(top_srcdir)/regex \
+ 			$(openssl_includes) @ZLIB_INCLUDES@
+ 
+-noinst_LIBRARIES =	libmysqld_int.a
+-pkglib_LIBRARIES =	libmysqld.a
++noinst_LTLIBRARIES =	libmysqld_int.la
++pkglib_LTLIBRARIES =	libmysqld.la
+ SUBDIRS =		. examples
+-libmysqld_sources=	libmysqld.c lib_sql.cc emb_qcache.cc
++#libmysqld_sources=	libmysqld.c lib_sql.cc emb_qcache.cc
+ libmysqlsources =	errmsg.c get_password.c libmysql.c client.c pack.c \
+                         my_time.c
+ sqlexamplessources =	ha_example.cc ha_tina.cc
+@@ -66,50 +66,22 @@
+ 	parse_file.cc sql_view.cc sql_trigger.cc my_decimal.cc \
+ 	ha_blackhole.cc ha_archive.cc my_user.c
+ 
+-libmysqld_int_a_SOURCES= $(libmysqld_sources) $(libmysqlsources) $(sqlsources) $(sqlexamplessources)
+-libmysqld_a_SOURCES=
++libmysqld_int_la_SOURCES= $(libmysqld_sources) $(libmysqlsources) $(sqlsources) $(sqlexamplessources)
++#libmysqld_la_SOURCES=
++libmysqld_la_SOURCES=	libmysqld.c lib_sql.cc emb_qcache.cc
+ 
+ # automake misses these
+ sql_yacc.cc sql_yacc.h: $(top_srcdir)/sql/sql_yacc.yy
+ 
+-# The following libraries should be included in libmysqld.a
+-INC_LIB=	$(top_builddir)/regex/libregex.a \
+-		$(top_builddir)/myisam/libmyisam.a \
+-		$(top_builddir)/myisammrg/libmyisammrg.a \
+-		$(top_builddir)/heap/libheap.a \
+-		@innodb_libs@ @bdb_libs_with_path@ \
+-		$(top_builddir)/mysys/libmysys.a \
+-		$(top_builddir)/strings/libmystrings.a \
+-		$(top_builddir)/dbug/libdbug.a \
+-		$(top_builddir)/vio/libvio.a @NDB_SCI_LIBS@
++# The following libraries should be included in libmysqld.la
++libmysqld_la_LIBADD=	$(top_builddir)/regex/libregex.la \
++		$(top_builddir)/myisam/libmyisam.la \
++		$(top_builddir)/myisammrg/libmyisammrg.la \
++		$(top_builddir)/heap/libheap.la \
++		$(top_builddir)/innobase/libinnobase.la @bdb_libs_with_path@ \
++		$(top_builddir)/mysys/libmysys.la \
++		$(top_builddir)/vio/libvio.la @NDB_SCI_LIBS@ \
++		libmysqld_int.la
+-
+-
+-#
+-# To make it easy for the end user to use the embedded library we
+-# generate a total libmysqld.a from all library files,
+-
+-# note - InnoDB libraries have circular dependencies, so in INC_LIB
+-# few libraries are present two times. Metrowerks linker doesn't like
+-# it at all. Traditional ar has no problems with it, but still there's no
+-# need to add the same file twice to the library, so 'sort -u' save us
+-# some time and spares unnecessary work.
+-
+-libmysqld.a:	libmysqld_int.a $(INC_LIB)
+-if DARWIN_MWCC
+-	mwld -lib -o $@ libmysqld_int.a `echo $(INC_LIB) | sort -u`
+-else
+-		-rm -f libmysqld.a
+-		if test "$(host_os)" = "netware" ; \
+-		then \
+-		  $(libmysqld_a_AR) libmysqld.a libmysqld_int.a $(INC_LIB) ; \
+-		else \
+-		  for arc in ./libmysqld_int.a $(INC_LIB); do \
+-		    arpath=`echo $$arc|sed 's|[^/]*$$||'`; \
+-		    $(AR) t $$arc|sed "s|^|$$arpath|"; \
+-		  done | sort -u | xargs $(AR) cq libmysqld.a ; \
+-		  $(RANLIB) libmysqld.a	; \
+-		fi
+-endif
+ 
+ ## XXX: any time the client interface changes, we'll need to bump
+ ## the version info for libmysqld; however, it's possible for the
+diff -ur mysql-5.0.76-old/myisam/Makefile.am mysql-5.0.76/myisam/Makefile.am
+--- mysql-5.0.76-old/myisam/Makefile.am	2009-01-15 16:45:21.000000000 -0100
++++ mysql-5.0.76/myisam/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -16,27 +16,27 @@
+ EXTRA_DIST =		mi_test_all.sh mi_test_all.res ft_stem.c CMakeLists.txt
+ pkgdata_DATA =		mi_test_all mi_test_all.res
+ 
+-INCLUDES =		-I$(top_builddir)/include -I$(top_srcdir)/include
+-LDADD =			@CLIENT_EXTRA_LDFLAGS@ libmyisam.a \
+-			$(top_builddir)/mysys/libmysys.a \
+-			$(top_builddir)/dbug/libdbug.a \
+-			$(top_builddir)/strings/libmystrings.a @ZLIB_LIBS@
+-pkglib_LIBRARIES =	libmyisam.a
++INCLUDES =		-I$(top_builddir)/include -I$(top_srcdir)/include \
++				-I$(top_builddir)/sql -I$(top_srcdir)/sql
++LDADD =			@CLIENT_EXTRA_LDFLAGS@ libmyisam.la \
++			$(top_builddir)/mysys/libmysys.la \
++			$(ZLIB_LIBS)
++noinst_LTLIBRARIES =	libmyisam.la
+ bin_PROGRAMS =		myisamchk myisamlog myisampack myisam_ftdump
+-myisamchk_DEPENDENCIES=	$(LIBRARIES)
+-myisamlog_DEPENDENCIES=	$(LIBRARIES)
+-myisampack_DEPENDENCIES=$(LIBRARIES)
++myisamchk_DEPENDENCIES=	$(LTLIBRARIES)
++myisamlog_DEPENDENCIES=	$(LTLIBRARIES)
++myisampack_DEPENDENCIES=$(LTLIBRARIES)
+ noinst_PROGRAMS =	mi_test1 mi_test2 mi_test3 rt_test sp_test #ft_test1 ft_eval
+ noinst_HEADERS =	myisamdef.h rt_index.h rt_key.h rt_mbr.h sp_defs.h fulltext.h ftdefs.h ft_test1.h ft_eval.h
+-mi_test1_DEPENDENCIES=	$(LIBRARIES)
+-mi_test2_DEPENDENCIES=	$(LIBRARIES)
+-mi_test3_DEPENDENCIES=	$(LIBRARIES)
+-#ft_test1_DEPENDENCIES=	$(LIBRARIES)
+-#ft_eval_DEPENDENCIES=	$(LIBRARIES)
+-myisam_ftdump_DEPENDENCIES=	$(LIBRARIES)
+-rt_test_DEPENDENCIES=	$(LIBRARIES)
+-sp_test_DEPENDENCIES=	$(LIBRARIES)
+-libmyisam_a_SOURCES =	mi_open.c mi_extra.c mi_info.c mi_rkey.c \
++mi_test1_DEPENDENCIES=	$(LTLIBRARIES)
++mi_test2_DEPENDENCIES=	$(LTLIBRARIES)
++mi_test3_DEPENDENCIES=	$(LTLIBRARIES)
++#ft_test1_DEPENDENCIES=	$(LTLIBRARIES)
++#ft_eval_DEPENDENCIES=	$(LTLIBRARIES)
++myisam_ftdump_DEPENDENCIES=	$(LTLIBRARIES)
++rt_test_DEPENDENCIES=	$(LTLIBRARIES)
++sp_test_DEPENDENCIES=	$(LTLIBRARIES)
++libmyisam_la_SOURCES =	mi_open.c mi_extra.c mi_info.c mi_rkey.c \
+ 			mi_rnext.c mi_rnext_same.c \
+ 			mi_search.c mi_page.c mi_key.c mi_locking.c \
+ 			mi_rrnd.c mi_scan.c mi_cache.c \
+diff -ur mysql-5.0.76-old/myisammrg/Makefile.am mysql-5.0.76/myisammrg/Makefile.am
+--- mysql-5.0.76-old/myisammrg/Makefile.am	2009-01-15 16:45:25.000000000 -0100
++++ mysql-5.0.76/myisammrg/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -14,9 +14,9 @@
+ # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
+ INCLUDES =		-I$(top_builddir)/include -I$(top_srcdir)/include
+-pkglib_LIBRARIES =	libmyisammrg.a
++noinst_LTLIBRARIES =	libmyisammrg.la
+ noinst_HEADERS =	myrg_def.h
+-libmyisammrg_a_SOURCES = myrg_open.c myrg_extra.c myrg_info.c myrg_locking.c \
++libmyisammrg_la_SOURCES = myrg_open.c myrg_extra.c myrg_info.c myrg_locking.c \
+ 			myrg_rrnd.c myrg_update.c myrg_delete.c myrg_rsame.c \
+ 			myrg_panic.c myrg_close.c myrg_create.c myrg_static.c \
+ 			myrg_rkey.c myrg_rfirst.c myrg_rlast.c myrg_rnext.c \
+diff -ur mysql-5.0.76-old/mysys/Makefile.am mysql-5.0.76/mysys/Makefile.am
+--- mysql-5.0.76-old/mysys/Makefile.am	2009-01-15 16:47:01.000000000 -0100
++++ mysql-5.0.76/mysys/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -18,14 +18,12 @@
+ MYSQLBASEdir=		$(prefix)
+ INCLUDES =		@ZLIB_INCLUDES@ -I$(top_builddir)/include \
+ 			-I$(top_srcdir)/include -I$(srcdir)
+-pkglib_LIBRARIES =	libmysys.a
+-LDADD =			libmysys.a ../dbug/libdbug.a \
+-			../strings/libmystrings.a
++pkglib_LTLIBRARIES =	libmysys.la
+ noinst_HEADERS =	mysys_priv.h my_static.h \
+ 			my_os2cond.c my_os2dirsrch.c my_os2dirsrch.h \
+ 			my_os2dlfcn.c my_os2file64.c my_os2mutex.c \
+ 			my_os2thread.c my_os2tls.c
+-libmysys_a_SOURCES =    my_init.c my_getwd.c mf_getdate.c my_mmap.c \
++libmysys_la_SOURCES =    my_init.c my_getwd.c mf_getdate.c my_mmap.c \
+ 			mf_path.c mf_loadpath.c my_file.c \
+ 			my_open.c my_create.c my_dup.c my_seek.c my_read.c \
+ 			my_pread.c my_write.c my_getpagesize.c \
+@@ -49,21 +47,26 @@
+ 			my_quick.c my_lockmem.c my_static.c \
+ 			my_sync.c my_getopt.c my_mkdir.c \
+ 			default_modify.c default.c \
+-                        my_compress.c checksum.c raid.cc \
++			my_compress.c checksum.c raid.cc \
+ 			my_net.c my_port.c my_sleep.c \
+ 			charset.c charset-def.c my_bitmap.c my_bit.c md5.c \
+ 			my_gethostbyname.c rijndael.c my_aes.c sha1.c \
+ 			my_handler.c my_netware.c my_largepage.c \
+-			my_memmem.c \
+-			my_windac.c my_access.c base64.c my_libwrap.c
++			my_memmem.c my_windac.c my_access.c base64.c \
++			my_libwrap.c
++libmysys_la_LIBADD = $(top_builddir)/dbug/libdbug.la $(top_builddir)/strings/libmystrings.la \
++			$(ZLIB_LIBS)
++if NEED_THREADS
++libmysys_la_SOURCES += thr_alarm.c thr_lock.c thr_mutex.c thr_rwlock.c my_pthread.c my_thr_init.c
++endif
++
+ EXTRA_DIST =		thr_alarm.c thr_lock.c my_pthread.c my_thr_init.c \
+ 			thr_mutex.c thr_rwlock.c mf_soundex.c my_conio.c \
+ 			my_wincond.c my_winthread.c CMakeLists.txt
+-libmysys_a_LIBADD =	@THREAD_LOBJECTS@
+-# test_dir_DEPENDENCIES=	$(LIBRARIES)
+-# testhash_DEPENDENCIES=	$(LIBRARIES)
+-# test_charset_DEPENDENCIES=	$(LIBRARIES)
+-# charset2html_DEPENDENCIES=	$(LIBRARIES)
++# test_dir_DEPENDENCIES=	$(LTLIBRARIES)
++# testhash_DEPENDENCIES=	$(LTLIBRARIES)
++# test_charset_DEPENDENCIES=	$(LTLIBRARIES)
++# charset2html_DEPENDENCIES=	$(LTLIBRARIES)
+ EXTRA_PROGRAMS =	
+ DEFS =			-DDEFAULT_BASEDIR=\"$(prefix)\" \
+ 			-DDATADIR="\"$(MYSQLDATAdir)\"" \
+@@ -74,8 +77,6 @@
+ 			-DDEFAULT_SYSCONFDIR="\"$(sysconfdir)\"" \
+                         @DEFS@
+ 
+-libmysys_a_DEPENDENCIES= @THREAD_LOBJECTS@
+-
+ # I hope this always does the right thing. Otherwise this is only test programs
+ FLAGS=$(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) @NOINST_LDFLAGS@
+ 
+@@ -84,41 +85,41 @@
+ # which automaticly removes the object files you use to compile a final program
+ #
+ 
+-test_thr_alarm$(EXEEXT): thr_alarm.c $(LIBRARIES)
++test_thr_alarm$(EXEEXT): thr_alarm.c $(LTLIBRARIES)
+ 	$(CP) $(srcdir)/thr_alarm.c ./test_thr_alarm.c
+ 	$(LINK) $(FLAGS) -DMAIN  ./test_thr_alarm.c $(LDADD) $(LIBS)
+ 	$(RM) -f ./test_thr_alarm.c
+ 
+-test_thr_lock$(EXEEXT): thr_lock.c $(LIBRARIES)
++test_thr_lock$(EXEEXT): thr_lock.c $(LTLIBRARIES)
+ 	$(CP) $(srcdir)/thr_lock.c test_thr_lock.c
+ 	$(LINK) $(FLAGS) -DMAIN  ./test_thr_lock.c $(LDADD) $(LIBS)
+ 	$(RM) -f ./test_thr_lock.c
+ 
+-test_vsnprintf$(EXEEXT): my_vsnprintf.c $(LIBRARIES)
++test_vsnprintf$(EXEEXT): my_vsnprintf.c $(LTLIBRARIES)
+ 	$(CP) $(srcdir)/my_vsnprintf.c test_vsnprintf.c
+ 	$(LINK) $(FLAGS) -DMAIN ./test_vsnprintf.c $(LDADD) $(LIBS)
+ 	$(RM) -f test_vsnprintf.c
+ 
+-test_io_cache$(EXEEXT): mf_iocache.c $(LIBRARIES)
++test_io_cache$(EXEEXT): mf_iocache.c $(LTLIBRARIES)
+ 	$(CP) $(srcdir)/mf_iocache.c test_io_cache.c
+ 	$(LINK) $(FLAGS) -DMAIN ./test_io_cache.c $(LDADD) $(LIBS)
+ 	$(RM) -f test_io_cache.c
+ 
+-test_dir$(EXEEXT): test_dir.c $(LIBRARIES)
++test_dir$(EXEEXT): test_dir.c $(LTLIBRARIES)
+ 	$(LINK) $(FLAGS) -DMAIN $(srcdir)/test_dir.c $(LDADD) $(LIBS)
+ 
+-test_charset$(EXEEXT): test_charset.c $(LIBRARIES)
++test_charset$(EXEEXT): test_charset.c $(LTLIBRARIES)
+ 	$(LINK) $(FLAGS) -DMAIN $(srcdir)/test_charset.c $(LDADD) $(LIBS)
+ 
+-testhash$(EXEEXT): testhash.c $(LIBRARIES)
++testhash$(EXEEXT): testhash.c $(LTLIBRARIES)
+ 	$(LINK) $(FLAGS) -DMAIN $(srcdir)/testhash.c $(LDADD) $(LIBS)
+ 
+-test_gethwaddr$(EXEEXT): my_gethwaddr.c $(LIBRARIES)
++test_gethwaddr$(EXEEXT): my_gethwaddr.c $(LTLIBRARIES)
+ 	$(CP) $(srcdir)/my_gethwaddr.c ./test_gethwaddr.c
+ 	$(LINK) $(FLAGS) -DMAIN  ./test_gethwaddr.c $(LDADD) $(LIBS)
+ 	$(RM) -f ./test_gethwaddr.c
+ 
+-test_base64$(EXEEXT): base64.c $(LIBRARIES)
++test_base64$(EXEEXT): base64.c $(LTLIBRARIES)
+ 	$(CP) $(srcdir)/base64.c ./test_base64.c
+ 	$(LINK) $(FLAGS) -DMAIN  ./test_base64.c $(LDADD) $(LIBS)
+ 	$(RM) -f ./test_base64.c
+diff -ur mysql-5.0.76-old/netware/Makefile.am mysql-5.0.76/netware/Makefile.am
+--- mysql-5.0.76-old/netware/Makefile.am	2009-01-15 16:48:03.000000000 -0100
++++ mysql-5.0.76/netware/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -16,14 +16,13 @@
+ 
+ if HAVE_NETWARE
+ INCLUDES =			-I$(top_builddir)/include -I$(top_srcdir)/include -I..
+-LDADD =				@CLIENT_EXTRA_LDFLAGS@ ../mysys/libmysys.a \
+-				../dbug/libdbug.a ../strings/libmystrings.a
++LDADD =				@CLIENT_EXTRA_LDFLAGS@ ../mysys/libmysys.la
+ bin_PROGRAMS =			mysqld_safe mysql_install_db mysql_test_run libmysql
+ mysqld_safe_SOURCES=		mysqld_safe.c my_manage.c
+ mysql_install_db_SOURCES=	mysql_install_db.c my_manage.c
+ mysql_test_run_SOURCES=		mysql_test_run.c my_manage.c
+ libmysql_SOURCES=		libmysqlmain.c
+-libmysql_LDADD =		../libmysql/.libs/libmysqlclient.a \
++libmysql_LDADD =		../libmysql/.libs/libmysqlclient.la \
+ 				@openssl_libs@ @yassl_libs@
+ 
+ netware_build_files =           client/mysql.def client/mysqladmin.def \
+diff -ur mysql-5.0.76-old/pstack/Makefile.am mysql-5.0.76/pstack/Makefile.am
+--- mysql-5.0.76-old/pstack/Makefile.am	2009-01-15 16:48:04.000000000 -0100
++++ mysql-5.0.76/pstack/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -27,8 +27,8 @@
+ EXTRA_DIST=		$(SRC)
+ 
+ if COMPILE_PSTACK
+-pkglib_LIBRARIES =	libpstack.a
+-libpstack_a_SOURCES =	bucomm.c filemode.c linuxthreads.c rddbg.c debug.c ieee.c pstack.c stabs.c
++pkglib_LTLIBRARIES =	libpstack.la
++libpstack_la_SOURCES =	bucomm.c filemode.c linuxthreads.c rddbg.c debug.c ieee.c pstack.c stabs.c
+ endif
+ 
+ # Don't update the files from bitkeeper
+diff -ur mysql-5.0.76-old/regex/Makefile.am mysql-5.0.76/regex/Makefile.am
+--- mysql-5.0.76-old/regex/Makefile.am	2009-01-15 16:48:05.000000000 -0100
++++ mysql-5.0.76/regex/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -16,10 +16,10 @@
+ # MA 02111-1307, USA
+ 
+ INCLUDES =		-I$(top_builddir)/include -I$(top_srcdir)/include
+-noinst_LIBRARIES =	libregex.a
+-LDADD=			libregex.a $(top_builddir)/strings/libmystrings.a
++noinst_LTLIBRARIES =	libregex.la
++LDADD=			libregex.la $(top_builddir)/strings/libmystrings.la
+ noinst_HEADERS =	cclass.h cname.h regex2.h utils.h engine.c my_regex.h
+-libregex_a_SOURCES =	regerror.c regcomp.c regexec.c regfree.c reginit.c
++libregex_la_SOURCES =	regerror.c regcomp.c regexec.c regfree.c reginit.c
+ noinst_PROGRAMS =	re
+ re_SOURCES =		split.c debug.c main.c
+ re_LDFLAGS= @NOINST_LDFLAGS@
+diff -ur mysql-5.0.76-old/server-tools/instance-manager/Makefile.am mysql-5.0.76/server-tools/instance-manager/Makefile.am
+--- mysql-5.0.76-old/server-tools/instance-manager/Makefile.am	2009-01-15 16:48:07.000000000 -0100
++++ mysql-5.0.76/server-tools/instance-manager/Makefile.am	2009-03-28 23:41:08.000000000 -0100
+@@ -24,8 +24,7 @@
+ # default_options.h, generated from default_options.h.in)
+ # See automake/autoconf docs for details
+ 
+-noinst_LTLIBRARIES= liboptions.la
+-noinst_LIBRARIES=   libnet.a
++noinst_LTLIBRARIES= liboptions.la libnet.la
+ 
+ liboptions_la_CXXFLAGS= $(CXXFLAGS) \
+ 	-DDEFAULT_PID_FILE_NAME="$(localstatedir)/mysqlmanager.pid" \
+@@ -37,17 +36,17 @@
+ 	-DPROTOCOL_VERSION=@PROTOCOL_VERSION@
+ 
+ liboptions_la_SOURCES= options.h options.cc priv.h priv.cc
+-liboptions_la_LIBADD= $(top_builddir)/libmysql/get_password.lo
++
++liboptions_la_LIBADD= $(top_builddir)/libmysql/libmysqlclient.la
+ 
+ # MySQL sometimes uses symlinks to reuse code 
+ # All symlinked files are grouped in libnet.a
+ 
+-nodist_libnet_a_SOURCES= net_serv.cc client_settings.h
++nodist_libnet_la_SOURCES= net_serv.cc client_settings.h \
++	$(srcdir)/../../sql/password.c $(srcdir)/../../sql/pack.c \
++	$(srcdir)/../../sql/sql_state.c $(srcdir)/../../sql/mini_client_errors.c \
++	$(srcdir)/../../sql/client.c
++
+-libnet_a_LIBADD= $(top_builddir)/sql/password.$(OBJEXT) \
+-	$(top_builddir)/sql/pack.$(OBJEXT) \
+-	$(top_builddir)/sql/sql_state.$(OBJEXT) \
+-	$(top_builddir)/sql/mini_client_errors.$(OBJEXT)\
+-	$(top_builddir)/sql/client.$(OBJEXT)
+ 
+ CLEANFILES= net_serv.cc client_settings.h
+ 
+@@ -79,11 +83,11 @@
+                         portability.h
+ 
+ mysqlmanager_LDADD=	liboptions.la \
+-			libnet.a \
+-			$(top_builddir)/vio/libvio.a \
+-			$(top_builddir)/mysys/libmysys.a \
+-			$(top_builddir)/strings/libmystrings.a \
+-			$(top_builddir)/dbug/libdbug.a \
++			libnet.la \
++			$(top_builddir)/vio/libvio.la \
++			$(top_builddir)/mysys/libmysys.la \
++			$(top_builddir)/strings/libmystrings.la \
++			$(top_builddir)/dbug/libdbug.la \
+ 			@openssl_libs@ @yassl_libs@ @ZLIB_LIBS@
+ 
+ 
+diff -ur mysql-5.0.76-old/sql/Makefile.am mysql-5.0.76/sql/Makefile.am
+--- mysql-5.0.76-old/sql/Makefile.am	2009-01-15 16:48:09.000000000 -0100
++++ mysql-5.0.76/sql/Makefile.am	2009-03-28 17:47:22.000000000 -0100
+@@ -22,25 +22,24 @@
+ 			@bdb_includes@ @innodb_includes@ @ndbcluster_includes@ \
+ 			-I$(top_builddir)/include -I$(top_srcdir)/include \
+ 			-I$(top_srcdir)/regex -I$(srcdir) \
+-                        $(openssl_includes)
++			$(openssl_includes)
+ WRAPLIBS=		@WRAPLIBS@
+ SUBDIRS =		share
+ libexec_PROGRAMS =	mysqld
+ EXTRA_PROGRAMS =	gen_lex_hash
+ bin_PROGRAMS =		mysql_tzinfo_to_sql
+ gen_lex_hash_LDFLAGS =  @NOINST_LDFLAGS@
+-LDADD =			$(top_builddir)/myisam/libmyisam.a \
+-			$(top_builddir)/myisammrg/libmyisammrg.a \
+-			$(top_builddir)/heap/libheap.a \
+-			$(top_builddir)/vio/libvio.a \
+-			$(top_builddir)/mysys/libmysys.a \
+-			$(top_builddir)/dbug/libdbug.a \
+-			$(top_builddir)/regex/libregex.a \
+-			$(top_builddir)/strings/libmystrings.a @ZLIB_LIBS@ @NDB_SCI_LIBS@
+-
+-mysqld_LDADD =		@MYSQLD_EXTRA_LDFLAGS@ \
+-			@bdb_libs@ @innodb_libs@ @pstack_libs@ \
+-                        @innodb_system_libs@ \
++LDADD =			$(top_builddir)/myisam/libmyisam.la \
++			$(top_builddir)/myisammrg/libmyisammrg.la \
++			$(top_builddir)/heap/libheap.la \
++			$(top_builddir)/vio/libvio.la \
++			$(top_builddir)/mysys/libmysys.la \
++			$(top_builddir)/regex/libregex.la \
++			@ZLIB_LIBS@ @NDB_SCI_LIBS@
++
++mysqld_LDADD =	@MYSQLD_EXTRA_LDFLAGS@ \
++			@bdb_libs@ $(top_builddir)/innobase/libinnobase.la \
++			@pstack_libs@ @innodb_system_libs@ \
+ 			@ndbcluster_libs@ @ndbcluster_system_libs@ \
+ 			$(LDADD)  $(CXXLDFLAGS) $(WRAPLIBS) @LIBDL@ \
+ 			$(yassl_libs) $(openssl_libs) @MYSQLD_EXTRA_LIBS@
+@@ -52,43 +51,35 @@
+ 			procedure.h sql_class.h sql_lex.h sql_list.h \
+ 			sql_manager.h sql_map.h sql_string.h unireg.h \
+ 			sql_error.h field.h handler.h mysqld_suffix.h \
+-			ha_myisammrg.h\
+-			ha_heap.h ha_myisam.h ha_berkeley.h ha_innodb.h \
+-			ha_ndbcluster.h ha_ndbcluster_cond.h \
+-			opt_range.h protocol.h \
+-			sql_select.h structs.h table.h sql_udf.h hash_filo.h\
+-			lex.h lex_symbol.h sql_acl.h sql_crypt.h  \
+-			log_event.h sql_repl.h slave.h \
+-			stacktrace.h sql_sort.h sql_cache.h set_var.h \
+-			spatial.h gstream.h client_settings.h tzfile.h \
+-                        tztime.h my_decimal.h\
++			ha_heap.h ha_berkeley.h ha_innodb.h \
++			ha_ndbcluster.h ha_ndbcluster_cond.h opt_range.h \
++			protocol.h sql_select.h structs.h table.h sql_udf.h \
++			hash_filo.h lex.h lex_symbol.h sql_acl.h sql_crypt.h  \
++			log_event.h sql_repl.h slave.h stacktrace.h sql_sort.h \
++			sql_cache.h set_var.h spatial.h gstream.h \
++			client_settings.h tzfile.h tztime.h my_decimal.h\
+ 			sp_head.h sp_pcontext.h sp_rcontext.h sp.h sp_cache.h \
+ 			parse_file.h sql_view.h	sql_trigger.h \
+-			sql_array.h sql_cursor.h \
+-			examples/ha_example.h ha_archive.h \
+-			examples/ha_tina.h ha_blackhole.h  \
++			sql_array.h sql_cursor.h examples/ha_example.h \
++			ha_archive.h examples/ha_tina.h ha_blackhole.h  \
+ 			ha_federated.h
+-mysqld_SOURCES =	sql_lex.cc sql_handler.cc \
+-			item.cc item_sum.cc item_buff.cc item_func.cc \
+-			item_cmpfunc.cc item_strfunc.cc item_timefunc.cc \
+-			thr_malloc.cc item_create.cc item_subselect.cc \
+-			item_row.cc item_geofunc.cc \
+-			field.cc strfunc.cc key.cc sql_class.cc sql_list.cc \
+-			net_serv.cc protocol.cc sql_state.c \
+-			lock.cc my_lock.c \
+-			sql_string.cc sql_manager.cc sql_map.cc \
+-			mysqld.cc password.c hash_filo.cc hostname.cc \
+-			set_var.cc sql_parse.cc sql_yacc.yy \
+-			sql_base.cc table.cc sql_select.cc sql_insert.cc \
+-                        sql_prepare.cc sql_error.cc sql_locale.cc \
+-			sql_update.cc sql_delete.cc uniques.cc sql_do.cc \
+-			procedure.cc item_uniq.cc sql_test.cc \
++mysqld_SOURCES =	sql_lex.cc sql_handler.cc item.cc item_sum.cc \
++			item_buff.cc item_func.cc item_cmpfunc.cc \
++			item_strfunc.cc item_timefunc.cc thr_malloc.cc \
++			item_create.cc item_subselect.cc item_row.cc \
++			item_geofunc.cc field.cc strfunc.cc key.cc \
++			sql_class.cc sql_list.cc net_serv.cc protocol.cc \
++			sql_state.c lock.cc my_lock.c sql_string.cc \
++			sql_manager.cc sql_map.cc mysqld.cc password.c \
++			hash_filo.cc hostname.cc set_var.cc sql_parse.cc \
++			sql_yacc.yy sql_base.cc table.cc sql_select.cc \
++			sql_insert.cc sql_prepare.cc sql_error.cc \
++			sql_locale.cc sql_update.cc sql_delete.cc uniques.cc \
++			sql_do.cc procedure.cc item_uniq.cc sql_test.cc \
+ 			log.cc log_event.cc init.cc derror.cc sql_acl.cc \
+-			unireg.cc des_key_file.cc \
+-			discover.cc time.cc opt_range.cc opt_sum.cc \
+-		   	records.cc filesort.cc handler.cc \
+-		        ha_heap.cc ha_myisam.cc ha_myisammrg.cc \
+-	                ha_berkeley.cc ha_innodb.cc \
++			unireg.cc des_key_file.cc discover.cc time.cc \
++			opt_range.cc opt_sum.cc records.cc filesort.cc \
++			handler.cc ha_heap.cc ha_berkeley.cc ha_innodb.cc \
+ 			ha_ndbcluster.cc ha_ndbcluster_cond.cc \
+ 			sql_db.cc sql_table.cc sql_rename.cc sql_crypt.cc \
+ 			sql_load.cc mf_iocache.cc field_conv.cc sql_show.cc \
+@@ -96,14 +87,13 @@
+ 			slave.cc sql_repl.cc sql_union.cc sql_derived.cc \
+ 			client.c sql_client.cc mini_client_errors.c pack.c\
+ 			stacktrace.c repl_failsafe.h repl_failsafe.cc \
+-			sql_olap.cc sql_view.cc \
+-			gstream.cc spatial.cc sql_help.cc sql_cursor.cc \
+-			tztime.cc my_time.c my_user.c my_decimal.cc\
+-			sp_head.cc sp_pcontext.cc  sp_rcontext.cc sp.cc \
+-			sp_cache.cc parse_file.cc sql_trigger.cc \
+-			examples/ha_example.cc ha_archive.cc \
+-			examples/ha_tina.cc ha_blackhole.cc \
+-			ha_federated.cc
++			sql_olap.cc sql_view.cc gstream.cc spatial.cc \
++			sql_help.cc sql_cursor.cc tztime.cc my_time.c \
++			my_user.c my_decimal.cc sp_head.cc sp_pcontext.cc \
++			sp_rcontext.cc sp.cc sp_cache.cc parse_file.cc \
++			sql_trigger.cc examples/ha_example.cc ha_archive.cc \
++			examples/ha_tina.cc ha_blackhole.cc ha_federated.cc \
++			ha_myisam.cc ha_myisammrg.cc
+ 
+ gen_lex_hash_SOURCES =	gen_lex_hash.cc
+ gen_lex_hash_LDADD =	$(LDADD) $(CXXLDFLAGS)
+diff -ur mysql-5.0.76-old/strings/Makefile.am mysql-5.0.76/strings/Makefile.am
+--- mysql-5.0.76-old/strings/Makefile.am	2009-01-15 16:48:34.000000000 -0100
++++ mysql-5.0.76/strings/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -16,7 +16,7 @@
+ # This file is public domain and comes with NO WARRANTY of any kind
+ 
+ INCLUDES =		-I$(top_builddir)/include -I$(top_srcdir)/include
+-pkglib_LIBRARIES =	libmystrings.a
++noinst_LTLIBRARIES =	libmystrings.la
+ 
+ # Exact one of ASSEMBLER_X
+ if ASSEMBLER_x86
+@@ -37,7 +37,7 @@
+ endif
+ endif
+ 
+-libmystrings_a_SOURCES = $(ASRCS) $(CSRCS)
++libmystrings_la_SOURCES = $(ASRCS) $(CSRCS)
+ noinst_PROGRAMS = conf_to_src
+ # Default charset definitions
+ EXTRA_DIST =		ctype-big5.c ctype-cp932.c ctype-czech.c ctype-eucjpms.c ctype-euc_kr.c ctype-win1250ch.c \
+@@ -54,25 +54,25 @@
+ 			strnmov-sparc.s strstr-sparc.s strxmov-sparc.s \
+ 			t_ctype.h CMakeLists.txt
+ 
+-libmystrings_a_LIBADD=
+-conf_to_src_SOURCES = conf_to_src.c xml.c ctype.c bcmp.c
+-conf_to_src_LDADD=
++libmystrings_la_LIBADD=
++conf_to_src_SOURCES = conf_to_src.c
++conf_to_src_LDADD = libmystrings.la
+ #force static linking of conf_to_src - essential when linking against
+ #custom installation of libc
+-conf_to_src_LDFLAGS= @NOINST_LDFLAGS@
++#conf_to_src_LDFLAGS= @NOINST_LDFLAGS@
+ 
+ # This is because the dependency tracking misses @FOO@ vars in sources.
+ #strtoull.o:		@CHARSET_OBJS@
+ 
+ 
+-FLAGS=$(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) @NOINST_LDFLAGS@
++FLAGS=$(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+ 
+-str_test: str_test.c $(pkglib_LIBRARIES)
+-	$(LINK) $(FLAGS) -DMAIN $(INCLUDES) $(srcdir)/str_test.c $(LDADD) $(pkglib_LIBRARIES)
++str_test: str_test.c $(pkglib_LTLIBRARIES)
++	$(LINK) $(FLAGS) -DMAIN $(INCLUDES) $(srcdir)/str_test.c $(LDADD) $(pkglib_LTLIBRARIES)
+ 
+-test_decimal$(EXEEXT): decimal.c $(pkglib_LIBRARIES)
++test_decimal$(EXEEXT): decimal.c $(pkglib_LTLIBRARIES)
+ 	$(CP) $(srcdir)/decimal.c ./test_decimal.c
+-	$(LINK) $(FLAGS) -DMAIN  ./test_decimal.c $(LDADD) $(pkglib_LIBRARIES)
++	$(LINK) $(FLAGS) -DMAIN  ./test_decimal.c $(LDADD) $(pkglib_LTLIBRARIES)
+ 	$(RM) -f ./test_decimal.c
+ 
+ # Don't update the files from bitkeeper
+diff -ur mysql-5.0.76-old/tests/Makefile.am mysql-5.0.76/tests/Makefile.am
+--- mysql-5.0.76-old/tests/Makefile.am	2009-01-15 16:48:39.000000000 -0100
++++ mysql-5.0.76/tests/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -42,11 +42,11 @@
+ 
+ insert_test_SOURCES=       insert_test.c
+ select_test_SOURCES=       select_test.c
+-insert_test_DEPENDENCIES=	$(LIBRARIES) $(pkglib_LTLIBRARIES)
+-select_test_DEPENDENCIES=	$(LIBRARIES) $(pkglib_LTLIBRARIES)
++insert_test_DEPENDENCIES=	$(LTLIBRARIES) $(pkglib_LTLIBRARIES)
++select_test_DEPENDENCIES=	$(LTLIBRARIES) $(pkglib_LTLIBRARIES)
+ 
+ bug25714_SOURCES=          bug25714.c
+-bug25714_DEPENDENCIES=     $(LIBRARIES) $(pkglib_LTLIBRARIES)
++bug25714_DEPENDENCIES=     $(LTLIBRARIES) $(pkglib_LTLIBRARIES)
+ 
+ # Fix for mit-threads
+ DEFS =			-DUNDEF_THREADS_HACK
+diff -ur mysql-5.0.76-old/tools/Makefile.am mysql-5.0.76/tools/Makefile.am
+--- mysql-5.0.76-old/tools/Makefile.am	2009-01-15 16:48:40.000000000 -0100
++++ mysql-5.0.76/tools/Makefile.am	2009-03-15 23:29:17.000000000 -0100
+@@ -23,7 +23,7 @@
+ 
+ bin_PROGRAMS=		mysqltestmanager
+ mysqltestmanager_SOURCES=	mysqlmanager.c
+-mysqltestmanager_DEPENDENCIES=	$(LIBRARIES) $(pkglib_LTLIBRARIES)
++mysqltestmanager_DEPENDENCIES=	$(LTLIBRARIES) $(pkglib_LTLIBRARIES)
+ DEF=			-DUNDEF_THREADS_HACK
+ 
+ # Don't update the files from bitkeeper
+diff -ur mysql-5.0.76-old/vio/Makefile.am mysql-5.0.76/vio/Makefile.am
+--- mysql-5.0.76-old/vio/Makefile.am	2009-01-15 16:48:40.000000000 -0100
++++ mysql-5.0.76/vio/Makefile.am	2009-03-28 20:24:27.000000000 -0100
+@@ -16,11 +16,12 @@
+ INCLUDES =		-I$(top_builddir)/include -I$(top_srcdir)/include \
+ 			$(openssl_includes)
+ LDADD =			@CLIENT_EXTRA_LDFLAGS@ $(openssl_libs) $(yassl_libs)
+-pkglib_LIBRARIES =	libvio.a
++pkglib_LTLIBRARIES =	libvio.la
+ 
+ noinst_HEADERS =	vio_priv.h
+ 
+-libvio_a_SOURCES =	vio.c viosocket.c viossl.c viosslfactories.c
++libvio_la_LIBADD = -lssl
++libvio_la_SOURCES =	vio.c viosocket.c viossl.c viosslfactories.c
+ 
+ EXTRA_DIST=	CMakeLists.txt
+ 
