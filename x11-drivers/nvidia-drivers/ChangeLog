@@ -2,6 +2,13 @@
 # Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+*nvidia-drivers-185.19 (06 Apr 2009)
+
+  06 Apr 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +nvidia-drivers-185.19.ebuild:
+  version bump for 185.19 ::
+  http://www.nvnews.net/vbulletin/showthread.php?p=1976912
+
 *nvidia-drivers-185.13 (25 Mar 2009)
 
   25 Mar 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
