@@ -32,12 +32,12 @@ DEPEND="
 		media-sound/phonon
 		x11-libs/qt-phonon:4
 	)
-	>=kde-base/kdelibs-${KDE_MINIMAL}[kdeprefix=,opengl?,semantic-desktop?]
-	>=kde-base/plasma-workspace-${KDE_MINIMAL}[kdeprefix=]
+	>=kde-base/kdelibs-${KDE_MINIMAL}[opengl?,semantic-desktop?]
+	>=kde-base/plasma-workspace-${KDE_MINIMAL}
 	x11-libs/qt-webkit:4
 	cdaudio? (
-		>=kde-base/libkcompactdisc-${KDE_MINIMAL}[kdeprefix=]
-		>=kde-base/libkcddb-${KDE_MINIMAL}[kdeprefix=]
+		>=kde-base/libkcompactdisc-${KDE_MINIMAL}
+		>=kde-base/libkcddb-${KDE_MINIMAL}
 	)
 	ifp? ( media-libs/libifp )
 	ipod? ( >=media-libs/libgpod-0.7.0 )
