@@ -1,0 +1,6 @@
+<layman>
+<overlay type="git" src="git://github.com/wired/wirelay.git" name="wirelay" contact="alex.alexander@gmail.com">
+<link>http://github.com/wired/wirelay/tree/master</link>
+<description>wired's gentoo overlay, fixes and other stuff not in tree</description>
+</overlay>
+</layman>
