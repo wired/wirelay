@@ -464,7 +464,7 @@ mysql_src_unpack() {
 	# Clean out old items
 	rm -f "${EPATCH_SOURCE}"/*
 	# Now link in right patches
-	cp "${FILESDIR}"/204_all_embedded-library-shared.5.0.76.patch "${EPATCH_SOURCE}"/
+	use amd64 && cp "${FILESDIR}"/204_all_embedded-library-shared.5.0.76.patch "${EPATCH_SOURCE}"/
 	mysql_mv_patches
 	# And apply
 	epatch
