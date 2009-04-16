@@ -1,0 +1,10 @@
+# ChangeLog for app-admin/conky
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+*conky-1.7.0_rc1 (16 Apr 2009)
+
+  16 Apr 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +files/conky-awesome.patch, +conky-1.7.0_rc1.ebuild:
+  tree ebuild with patch to make it work with awesome
+
