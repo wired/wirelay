@@ -2,6 +2,12 @@
 # Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+*nvidia-drivers-185.18.04 (24 Apr 2009)
+
+  24 Apr 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +nvidia-drivers-185.18.04.ebuild:
+  new beta nvidia driver. yes, its newer than 185.19, go figure =]
+
   15 Apr 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
   -nvidia-drivers-180.41.ebuild:
   in tree
