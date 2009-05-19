@@ -2,6 +2,15 @@
 # Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+*nvidia-settings-185.18.10 (19 May 2009)
+*nvidia-settings-185.18.08 (19 May 2009)
+*nvidia-settings-185.18.04 (19 May 2009)
+
+  19 May 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +nvidia-settings-185.18.04.ebuild, +nvidia-settings-185.18.08.ebuild,
+  +nvidia-settings-185.18.10.ebuild:
+  added nvidia-settings for 185.18.*
+
 *nvidia-settings-185.19 (13 Apr 2009)
 
   13 Apr 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
