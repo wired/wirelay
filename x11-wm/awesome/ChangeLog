@@ -2,6 +2,12 @@
 # Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+*awesome-3.3_rc3 (22 May 2009)
+
+  22 May 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +awesome-3.3_rc3.ebuild:
+  ebuild for 3.3_rc3 based on tree version with updated deps
+
   22 Mar 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
   awesome-9999.ebuild:
   awesome live ebuild from devnull

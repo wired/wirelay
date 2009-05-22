@@ -1,3 +1,7 @@
+# Alex Alexander (wired) <alex.alexander@gmail.com> (22 May 2009)
+# >= awesome 3.3 needs stuff from X11 overlay
+>=x11-wm/awesome-3.3_rc3
+
 # Alex Alexander (wired) <alex.alexander@gmail.com> (25 Apr 2009)
 # Masked nvidia-drivers 185.19 since 185.18.04 is newer (!)
 ~media-video/nvidia-settings-185.19
