@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<herd>no-herd</herd>
+	<longdescription>Conky is a system monitor that sits in the corner of your desktop. It is a fork of Torsmo that is actually maintained.</longdescription>
+	<use>
+		<flag name='awesome'>patch conky cli output to work with <pkg>x11-wm/awesome</pkg>'s awesome-client</flag>
+	</use>
+</pkgmetadata>
