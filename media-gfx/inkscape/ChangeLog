@@ -1,0 +1,15 @@
+# ChangeLog for media-gfx/inkscape
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+*inkscape-0.46-r5 (25 May 2009)
+
+  25 May 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  +inkscape-0.46-r5.ebuild, +files/inkscape-0.46-bug-174720-0.patch,
+  +files/inkscape-0.46-bug-174720-1.patch,
+  +files/inkscape-0.46-bug-214171.patch, +files/inkscape-0.46-gcc43.patch,
+  +files/inkscape-0.46-gcc44-glibc-2.10.patch,
+  +files/inkscape-0.46-gcc44_p2.patch, +files/inkscape-0.46-gcc44.patch,
+  +files/inkscape-0.46-poppler-0.8.3.patch:
+  patch for gcc 4.4 / glibc 2.10.1 - bug #270720
+
