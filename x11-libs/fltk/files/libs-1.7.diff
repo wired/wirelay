@@ -1,0 +1,22 @@
+diff -urN fltk-1.1.0rc6/src/Makefile fltk-1.1.0rc6-modified/src/Makefile
+--- fltk-1.1.0rc6/src/Makefile	Thu Aug  8 20:09:49 2002
++++ fltk-1.1.0rc6-modified/src/Makefile	Thu Aug 22 15:16:20 2002
+@@ -405,12 +405,12 @@
+ 	-$(MKDIR) $(DESTDIR)$(libdir)
+ 	$(RM) $(DESTDIR)$(libdir)/$(LIBNAME)
+ 	-$(CP) $(LIBNAME) $(FLLIBNAME) $(GLLIBNAME) $(IMGLIBNAME) $(DESTDIR)$(libdir)
+-	$(RANLIB) $(DESTDIR)$(libdir)/$(LIBNAME)
+-	$(RANLIB) $(DESTDIR)$(libdir)/$(FLLIBNAME)
+-	if test x$(GLLIBNAME) != x; then \
+-		$(RANLIB) $(DESTDIR)$(libdir)/$(GLLIBNAME); \
+-	fi
+-	$(RANLIB) $(DESTDIR)$(libdir)/$(IMGLIBNAME)
++	#$(RANLIB) $(DESTDIR)$(libdir)/$(LIBNAME)
++	#$(RANLIB) $(DESTDIR)$(libdir)/$(FLLIBNAME)
++	#if test x$(GLLIBNAME) != x; then \
++	#	$(RANLIB) $(DESTDIR)$(libdir)/$(GLLIBNAME); \
++	#fi
++	#$(RANLIB) $(DESTDIR)$(libdir)/$(IMGLIBNAME)
+ 	if test x$(DSONAME) = xlibfltk.so.1.1; then\
+ 		$(RM) $(DESTDIR)$(libdir)/libfltk.so*;\
+ 		$(CP) libfltk.so.1.1 $(DESTDIR)$(libdir); \

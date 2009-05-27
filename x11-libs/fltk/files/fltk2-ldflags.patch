@@ -1,0 +1,91 @@
+--- fltk2-config.in.orig	2006-04-15 19:43:12.000000000 +0200
++++ fltk2-config.in	2009-04-21 09:58:30.000000000 +0200
+@@ -58,7 +58,7 @@
+ exec_prefix_set=no
+ bindir=@bindir@
+ includedir=@includedir@
+-libdir=@libdir@
++libdir=@libdir@/fltk
+ srcdir=@srcdir@
+
+ # compiler names
+@@ -69,10 +69,7 @@
+ POSTBUILD="@POSTBUILD@"
+
+ # flags for C++ compiler:
+-CFLAGS="@CFLAGS@"
+-CXXFLAGS="@CXXFLAGS@"
+-LDFLAGS="@LDFLAGS@"
+-LDLIBS="@LDFLAGS@ @LIBS@"
++LDLIBS="@LIBS@"
+
+ # libraries to link with:
+ LIBNAME="@LIBNAME@"
+@@ -167,8 +164,8 @@
+ #     This fixes --prefix=<path> bug - fltk2-config didn't return proper stuff
+       bindir=${exec_prefix}
+       includedir=${prefix}/include
+-      libdir=${prefix}/lib
+-      DSOLINK="-Wl,-rpath,${prefix}/lib"
++      libdir=${prefix}/lib/fltk
++      DSOLINK="-Wl,-rpath,${prefix}/lib/fltk"
+ 	    ;;
+ 	--prefix)
+ 	    echo_prefix=yes
+--- configure.in.orig	2009-05-08 16:14:28.000000000 +0200
++++ configure.in	2009-05-08 16:15:23.000000000 +0200
+@@ -152,43 +152,25 @@
+ 	    DSOSYMLINK=".dylib"
+ 	    DSOSUFFIX=".$FL_API_VERSION.dylib"
+ 	    DSOCOMMAND="ld $DSOFLAGS -dylib /usr/lib/dylib1.o -lc"
+-	    if test "$libdir" != "/usr/lib"; then
+-		    DSOLINK="-Wl,-rpath,$libdir"
+-            fi
+ 	    ;;
+
+ 	SunOS* | UNIX_S*)
+ 	    DSOCOMMAND="\$(CXX) -h \$@ \$(LDLIBS) -G $DEBUGFLAG -o"
+-	    if test "$libdir" != "/usr/lib"; then
+-		    DSOLINK="-R$libdir"
+-            fi
+ 	    ;;
+ 	HP-UX*)
+ 	    DSOSUFFIX=".sl.$FL_API_VERSION"
+ 	    DSOSYMLINK=".sl"
+ 	    DSOCOMMAND="ld -b -z +h \$@ $DEBUGFLAG -o"
+-	    if test "$libdir" != "/usr/lib"; then
+-		    DSOLINK="-Wl,-rpath,$libdir"
+-            fi
+ 	    ;;
+ 	IRIX*)
+             DSOCOMMAND="\$(CXX) -Wl,-soname,\$@,-set_version,sgi1.1 \$(LDLIBS) -shared $DEBUGFLAG -o"
+-	    if test "$libdir" != "/usr/lib" - a "$libdir" != "/usr/lib32"; then
+-		    DSOLINK="-Wl,-rpath,$libdir"
+-            fi
+ 	    ;;
+ 	OSF1*)
+             DSOCOMMAND="\$(CXX) -Wl,-soname,\$@ \$(LDLIBS) -shared $DEBUGFLAG -o"
+-	    if test "$libdir" != "/usr/lib" - a "$libdir" != "/usr/lib32"; then
+-		    DSOLINK="-Wl,-rpath,$libdir"
+-            fi
+ 	    ;;
+ 	Linux* | *BSD*)
+ #           DSOCOMMAND="\$(CXX) -Wl,-soname,\$@ \$(LDLIBS) -shared -fPIC $DEBUGFLAG -o"
+             DSOCOMMAND="\$(CXX) \$(LDFLAGS) -shared -fPIC $DEBUGFLAG -o"
+-	    if test "$libdir" != "/usr/lib"; then
+-		    DSOLINK="-Wl,-rpath,$libdir"
+-            fi
+ 	    ;;
+ 	AIX*)
+ 	    DSOSUFFIX="_s.a"
+--- fltk.list.in.orig	2009-04-21 10:01:07.000000000 +0200
++++ fltk.list.in	2009-04-21 10:01:18.000000000 +0200
+@@ -38,7 +38,7 @@
+ $bindir=@bindir@
+ $datadir=@datadir@
+ $includedir=@includedir@
+-$libdir=@libdir@
++$libdir=@libdir@/fltk
+ $mandir=@mandir@
+
+ $CAT1EXT=@CAT1EXT@
