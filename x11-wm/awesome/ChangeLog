@@ -3,6 +3,10 @@
 # $Header: $
 
   28 May 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
+  awesome-9999.ebuild:
+  synced with devnull
+
+  28 May 2009; Alex Alexander (wired) <alex.alexander@gmail.com>
   -awesome-3.3_rc3.ebuild:
   in tree now :)
 
