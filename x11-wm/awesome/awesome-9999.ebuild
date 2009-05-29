@@ -13,7 +13,7 @@ HOMEPAGE="http://awesome.naquadah.org/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~ppc64 ~x86 ~x86-fbsd"
+KEYWORDS=""
 IUSE="dbus doc"
 
 RDEPEND=">=dev-lang/lua-5.1[deprecated]
