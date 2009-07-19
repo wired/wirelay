@@ -274,12 +274,6 @@ src_install() {
 		done
 		ABI=${OABI}
 		unset OABI
-	elif use amd64 ; then
-		src_install-libs lib32 $(get_multilibdir)
-		src_install-libs lib $(get_libdir)
-
-		rm -rf "${D}"/usr/$(get_multilibdir)/opengl/nvidia/include
-		rm -rf "${D}"/usr/$(get_multilibdir)/opengl/nvidia/extensions
 	else
 		src_install-libs
 	fi
