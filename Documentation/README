@@ -4,5 +4,8 @@ for all things to come :)
 
 * as of 2009/07/19 wirelay is in layman's overlay list
 * so
-	layman -f
+	layman -L
 	layman -a wirelay
+
+if you can't find it, you can always:
+	layman -f -o http://github.com/wired/wirelay/raw/master/Documentation/wirelay.list -a wirelay
