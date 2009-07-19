@@ -2,7 +2,7 @@ wirelay: wired's gentoo overlay
 
 for all things to come :)
 
-to add this overlay to layman use the following command:
-# layman -f -o http://github.com/wired/wirelay/raw/master/Documentation/wirelay.list -a wirelay
-
-* i just had to commit with the iphone :p
+* as of 2009/07/19 wirelay is in layman's overlay list
+* so
+	layman -f
+	layman -a wirelay
