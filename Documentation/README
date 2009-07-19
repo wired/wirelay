@@ -2,8 +2,7 @@ wirelay: wired's gentoo overlay
 
 for all things to come :)
 
-* as of 2009/07/19 wirelay is in layman's overlay list
-* so
+as of 2009/07/19 wirelay is in layman's overlay list
 	layman -L
 	layman -a wirelay
 
