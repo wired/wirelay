@@ -2,6 +2,14 @@
 # Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
+*conky-1.7.1.1-r1 (19 Jul 2009)
+
+  19 Jul 2009; Alex Alexander <wired@gentoo.org> +conky-1.7.1.1-r1.ebuild,
+  +files/conky-1.7.1.1-comment.patch, +files/conky_no_x11.conf:
+  created patch that allows #s in TEXT if they're escaped (\#).
+  patch submitted to upstream:
+  https://sourceforge.net/tracker/?func=detail&aid=2823946&group_id=143975&atid=757308
+
 *conky-1.7.0_rc1 (16 Apr 2009)
 
   16 Apr 2009; Alex Alexander (wired) <alex.alexander@gmail.com>

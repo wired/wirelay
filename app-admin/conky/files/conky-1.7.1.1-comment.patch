@@ -1,0 +1,42 @@
+--- src/conky.c.old	2009-07-19 21:13:24.355569233 +0300
++++ src/conky.c	2009-07-19 21:40:35.103537390 +0300
+@@ -3116,6 +3116,12 @@
+ 	return end - string;
+ }
+
++static size_t remove_escape(char *string)
++{
++	strfold(string,1);
++	return 1;
++}
++
+ static size_t remove_comments(char *string)
+ {
+ 	char *curplace;
+@@ -3141,6 +3147,7 @@
+ 	char *tmp_p;
+ 	char *arg = 0;
+ 	size_t len = 0;
++	int escape = 0;
+
+ 	p = strndup(const_p, max_user_text - 1);
+ 	while (text_contains_templates(p)) {
+@@ -3264,9 +3271,17 @@
+ 					append_object(retval, obj);
+ 				}
+ 			}
+-		} else if (*p == '#') {
++		} else if (*p == '#' && escape == 0 ) {
+ 			remove_comment(p);
++		} else if (*p == '#' && escape == 1 ) {
++			p--;
++			remove_escape(p);
+ 		}
++
++		if (*p == '\\')
++			escape = 1;
++		else
++			escape = 0;
+ 		p++;
+ 	}
+ 	obj = create_plain_text(s);
