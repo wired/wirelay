@@ -1,13 +1,60 @@
-diff --git a/src/conky.c b/src/conky.c
-index 6f7bde3..ef64b57 100644
---- a/src/conky.c
-+++ b/src/conky.c
-@@ -3385,6 +3385,8 @@ static int extract_variable_text_internal(struct text_object *retval, const char
+--- src/conky.c.old	2009-07-19 22:27:18.514288448 +0300
++++ src/conky.c	2009-07-19 22:29:01.673547946 +0300
+@@ -3093,6 +3093,10 @@
+ 	return 0;
+ }
+ 
++/* folds a string over top of itself, like so:
++ *
++ * if start is "blah", and you call it with count = 1, the result will be "lah"
++ */
+ static void strfold(char *start, int count)
+ {
+ 	char *curplace;
+@@ -3105,13 +3109,18 @@
+ /*
+  * - assumes that *string is '#'
+  * - removes the part from '#' to the end of line ('\n' or '\0')
+- * - BUT, it leaves the '\n'
++ * - it removes the '\n'
++ * - copies the last char into 'char *last' argument, which should be a pointer
++ *   to a char rather than a string.
+  */
+-static size_t remove_comment(char *string)
++static size_t remove_comment(char *string, char *last)
+ {
+ 	char *end = string;
+-	while(*end != '\0' && *end != '\n')
++	while (*end != '\0' && *end != '\n') {
+ 		++end;
++	}
++	if (last) *last = *end;
++	if (*end == '\n') end++;
+ 	strfold(string, end - string);
+ 	return end - string;
+ }
+@@ -3126,7 +3135,7 @@
+ 			strfold(curplace, 1);
+ 			folded += 1;
+ 		} else if (*curplace == '#') {
+-			folded += remove_comment(curplace);
++			folded += remove_comment(curplace, 0);
+ 		}
+ 	}
+ 	return folded;
+@@ -3264,8 +3273,14 @@
  					append_object(retval, obj);
  				}
  			}
 +		} else if (*p == '\\' && *(p+1) == '#') {
 +			strfold(p, 1);
  		} else if (*p == '#') {
- 			remove_comment(p);
+-			remove_comment(p);
++			char c;
++			if (remove_comment(p, &c) && p > orig_p && c == '\n') {
++				/* if remove_comment removed a newline, we need to 'back up' with p */
++				p--;
++			}
  		}
+ 		p++;
+ 	}
