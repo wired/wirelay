@@ -2,3 +2,7 @@
 # Masked nvidia-drivers 185.19 since 185.18.04 is newer (!)
 ~media-video/nvidia-settings-185.19
 ~x11-drivers/nvidia-drivers-185.19
+
+# Alex Alexander (wired) <alex.alexander@gmail.com> (25 Apr 2009)
+# Masked nvidia-drivers 190.16 because it fails miserably
+~x11-drivers/nvidia-drivers-190.16
