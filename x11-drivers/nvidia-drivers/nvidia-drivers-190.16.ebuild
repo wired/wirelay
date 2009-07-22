@@ -180,15 +180,15 @@ paravirt_check() {
 }
 
 pkg_setup() {
-	eerror
-	eerror "This driver tends to produce nice blank screens instead of your"
-	eerror "usual desktop. Proceed on your own risk."
-	eerror
-	eerror "http://www.nvnews.net/vbulletin/showthread.php?t=136143"
-	eerror
-	eerror "You've been warned!"
+	ewarn
+	ewarn "This driver tends to produce nice blank screens instead of your"
+	ewarn "usual desktop with a few nvidia models."
+	ewarn
+	ewarn "http://www.nvnews.net/vbulletin/showthread.php?t=136143"
+	ewarn
+	ewarn "Proceed at your own risk."
 	epause
-	eerror
+	ewarn
 
 	# try to turn off distcc and ccache for people that have a problem with it
 	export DISTCC_DISABLE=1
