@@ -1,10 +1,17 @@
 wirelay: wired's gentoo dev overlay - testing grounds and bleeding edge stuff
 
-for all things to come :)
+I no longer keep ChangeLogs in here, git log is enough
+if you need to see the changes for a folder just:
+	# in the directory you're interested in
+	git log .
+or
+	# in wirelay/
+	git log category/package
+
+if you need to see the log for a specific file only:
+	git log file
+
 
 as of 2009/07/19 wirelay is in layman's overlay list
 	layman -L
 	layman -a wirelay
-
-if you can't find it, you can always:
-	layman -f -o http://github.com/wired/wirelay/raw/master/Documentation/wirelay.list -a wirelay
