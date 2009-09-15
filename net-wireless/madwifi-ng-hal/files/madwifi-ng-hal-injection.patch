@@ -1,0 +1,24 @@
+diff -ur ath/if_ath.c ath/if_ath.c.new
+--- ath/if_ath.c	2009-04-15 11:09:22.000000000 +0200
++++ ath/if_ath.c.new	2009-04-15 11:16:06.000000000 +0200
+@@ -3024,6 +3024,7 @@
+ ath_tx_startraw(struct net_device *dev, struct ath_buf *bf, struct sk_buff *skb)
+ {
+ 	struct ath_softc *sc = netdev_priv(dev);
++	struct ieee80211com *ic = &sc->sc_ic;
+ 	struct ath_hal *ah = sc->sc_ah;
+ 	struct ieee80211_phy_params *ph = &(SKB_CB(skb)->phy); 
+ 	const HAL_RATE_TABLE *rt;
+@@ -3036,7 +3037,11 @@
+ 	struct ieee80211_frame *wh;
+ 
+ 	wh = (struct ieee80211_frame *)skb->data;
+-	try0 = ph->try[0];
++	try0 = (ic->ic_opmode == IEEE80211_M_MONITOR) ? 1 : ph->try[0];
++	/*
++	 * The retry value has to be patched to 1 when injecting,
++	 * otherwise the sequence number will be overwritten
++	 */
+ 	rt = sc->sc_currates;
+ 	txrate = dot11_to_ratecode(sc, rt, ph->rate[0]);
+ 	power = ph->power > 60 ? 60 : ph->power;

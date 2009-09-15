@@ -1,0 +1,15 @@
+--- tls_gnutls.c.orig	2006-09-09 03:47:28 +0100
++++ tls_gnutls.c	2007-01-23 13:39:44 +0000
+@@ -1029,8 +1029,11 @@
+ 				     const u8 *in_data, size_t in_len,
+ 				     size_t *out_len)
+ {
++	u8 *appl_data = NULL;
++	size_t appl_data_len = 0;
++  
+ 	return tls_connection_handshake(ssl_ctx, conn, in_data, in_len,
+-					out_len);
++					out_len, appl_data, appl_data_len);
+ }
+ 
+ 
