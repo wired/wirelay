@@ -4,7 +4,7 @@
 
 EAPI=2
 
-inherit git cmake-utils
+inherit git cmake-utils eutils
 
 EGIT_REPO_URI="git://git.naquadah.org/awesome.git"
 
@@ -23,19 +23,20 @@ RDEPEND=">=dev-lang/lua-5.1[deprecated]
 	media-libs/imlib2[png]
 	x11-libs/cairo[xcb]
 	x11-libs/libX11[xcb]
-	>=x11-libs/libxcb-1.1
+	>=x11-libs/libxcb-1.4
 	>=x11-libs/pango-1.19.3
 	>=x11-libs/startup-notification-0.10
-	>=x11-libs/xcb-util-0.3.4
+	>=x11-libs/xcb-util-0.3.6
 	dbus? ( >=sys-apps/dbus-1 )"
 
 DEPEND="${RDEPEND}
 	app-text/asciidoc
 	app-text/xmlto
 	>=dev-util/cmake-2.6
+	dev-util/gperf
 	dev-util/pkgconfig
-	media-gfx/imagemagick
-	x11-proto/xcb-proto
+	media-gfx/imagemagick[png]
+	>=x11-proto/xcb-proto-1.5
 	>=x11-proto/xproto-7.0.15
 	doc? (
 		app-doc/doxygen
@@ -49,29 +50,19 @@ RDEPEND="${RDEPEND}
 		x11-misc/gxmessage
 		x11-apps/xmessage
 	)
-	|| ( x11-terms/eterm
-		x11-misc/habak
-		x11-wm/windowmaker
-		media-gfx/feh
-		x11-misc/hsetroot
-		( media-gfx/imagemagick x11-apps/xwininfo )
-		media-gfx/xv
-		x11-misc/xsri
-		media-gfx/xli
-		x11-apps/xsetroot )"
-
-DOCS="AUTHORS BUGS PATCHES README STYLE"
+	"
 
 src_unpack() {
 	git_src_unpack
 	# ugly way to get the git revision
 	echo -n "`git --git-dir="${GIT_DIR}" describe`-gentoo" > ${S}/.version_stamp
 }
+DOCS="AUTHORS BUGS PATCHES README STYLE"
 
 mycmakeargs="-DPREFIX=/usr
 	-DSYSCONFDIR=/etc
-		$(cmake-utils_use_with dbus DBUS)
-		$(cmake-utils_use doc GENERATE_LUADOC)"
+	$(cmake-utils_use_with dbus DBUS)
+	$(cmake-utils_use doc GENERATE_LUADOC)"
 
 src_compile() {
 	local myargs="all"
@@ -79,7 +70,7 @@ src_compile() {
 	if use doc ; then
 		myargs="${myargs} doc"
 	fi
-	cmake-utils_src_compile ${myargs}
+	cmake-utils_src_make ${myargs}
 }
 
 src_install() {
