@@ -259,6 +259,9 @@ src_prepare() {
 
 		# If greater than 2.6.5 use M= instead of SUBDIR=
 		convert_to_m "${NV_SRC}"/Makefile.kbuild
+
+		# Fix compilation error
+		epatch "${FILESDIR}"/"${P}"-makefile.patch
 	fi
 }
 
@@ -424,8 +427,8 @@ src_install-libs() {
 	fi
 
 	#vdpau
-	if [[ -f ${libdir}/libvdpau_nvidia.so.${sover} ]]; then
-		dolib.so ${libdir}/libvdpau_nvidia.so.${sover}
+	if [[ -f ${libdir}/vdpau/libvdpau_nvidia.so.${sover} ]]; then
+		dolib.so ${libdir}/vdpau/libvdpau_nvidia.so.${sover}
 		dosym libvdpau_nvidia.so.${sover} /usr/${inslibdir}/libvdpau_nvidia.so
 	fi
 

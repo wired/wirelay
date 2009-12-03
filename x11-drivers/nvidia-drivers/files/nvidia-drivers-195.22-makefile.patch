@@ -1,0 +1,13 @@
+--- usr/src/nv/makefile.org	2009-11-26 20:42:38.000000000 +0100
++++ usr/src/nv/makefile	2009-11-26 20:43:07.000000000 +0100
+@@ -37,9 +37,7 @@
+ CC ?= cc
+ HOST_CC ?= $(CC)
+ 
+-ifndef ARCH
+- ARCH := $(shell uname -m | sed -e 's/i.86/i386/')
+-endif
++ARCH := $(shell uname -m | sed -e 's/i.86/i386/')
+ 
+ CONFTEST := sh ./conftest.sh "$(CC)" "$(HOST_CC)" $(ARCH) $(KERNEL_SOURCES) $(KERNEL_OUTPUT)
+ 
