@@ -10,7 +10,7 @@ DESCRIPTION="A download utility with resuming and segmented downloading with HTT
 HOMEPAGE="http://aria2.sourceforge.net/"
 SRC_URI="mirror://sourceforge/${PN}/${P}.tar.bz2"
 LICENSE="GPL-2"
-KEYWORDS="amd64 ~ppc ~ppc64 ~sparc x86"
+KEYWORDS="~amd64 ~ppc ~ppc64 ~sparc ~x86"
 SLOT="0"
 IUSE="ares bittorrent expat gnutls metalink nls scripts sqlite ssl test"
 
@@ -69,7 +69,7 @@ src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 
 	rm -rf "${D}/usr/share/doc/aria2"
-	dodoc ChangeLog README AUTHORS NEWS 
+	dodoc ChangeLog README AUTHORS NEWS
 	dohtml README.html doc/aria2c.1.html
 	use scripts && dobin doc/xmlrpc/*
 }
