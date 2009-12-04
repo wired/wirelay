@@ -1,0 +1,222 @@
+# ChangeLog for x11-misc/dmenu
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: /var/cvsroot/gentoo-x86/x11-misc/dmenu/ChangeLog,v 1.56 2009/09/05 00:10:49 ranger Exp $
+
+  05 Sep 2009; Brent Baude <ranger@gentoo.org> dmenu-4.0.ebuild:
+  Marking dmenu-4.0 ppc64 for bug 275411
+
+  27 Jul 2009; nixnut <nixnut@gentoo.org> dmenu-4.0.ebuild:
+  ppc stable #275411
+
+  27 Jul 2009; <chainsaw@gentoo.org> dmenu-4.0.ebuild:
+  Marked stable as requested by Jeroen Roovers <jer@gentoo.org> in bug
+  #275411. Compile-tested with USE="xinerama -savedconfig" and
+  MAKEOPTS="-j2" on a Core2 Duo.
+
+  15 Jul 2009; Christian Faulhammer <fauli@gentoo.org> dmenu-4.0.ebuild:
+  stable x86, bug 275411
+
+*dmenu-4.0 (09 May 2009)
+
+  09 May 2009; Cédric Krier <cedk@gentoo.org> +dmenu-4.0.ebuild:
+  Version bump
+
+  21 Mar 2009; Krzysiek Pawlik <nelchael@gentoo.org> -files/dmenu-3.7.patch,
+  -dmenu-3.7-r1.ebuild, -dmenu-3.8.ebuild:
+  Remove old versions.
+
+  01 Nov 2008; nixnut <nixnut@gentoo.org> dmenu-3.9.ebuild:
+  Stable on ppc wrt bug 244528
+
+  29 Oct 2008; Thomas Anderson <gentoofan23@gentoo.org> dmenu-3.9.ebuild:
+  stable amd64, bug 244528
+
+  27 Oct 2008; Brent Baude <ranger@gentoo.org> dmenu-3.9.ebuild:
+  stable ppc64, bug 244528
+
+  27 Oct 2008; Torsten Veller <tove@gentoo.org> dmenu-3.9.ebuild:
+  Stable on x86 (#244528)
+
+  11 Sep 2008; Cédric Krier <cedk@gentoo.org> ChangeLog:
+  Version bump
+
+  30 Jul 2008; Cédric Krier <cedk@gentoo.org> -dmenu-3.2.ebuild:
+  Remove old
+
+*dmenu-3.8 (30 Jul 2008)
+
+  30 Jul 2008; Cédric Krier <cedk@gentoo.org> +dmenu-3.8.ebuild:
+  Version bump
+
+  22 Jul 2008; Markus Rothe <corsair@gentoo.org> dmenu-3.7-r1.ebuild:
+  Stable on ppc64; bug #232476
+
+  22 Jul 2008; Torsten Veller <tove@gentoo.org> dmenu-3.7-r1.ebuild:
+  Stable on x86 (#232476)
+
+  22 Jul 2008; Cédric Krier <cedk@gentoo.org> dmenu-3.7-r1.ebuild:
+  Add missing xinerama in IUSE
+
+  22 Jul 2008; Cédric Krier <cedk@gentoo.org> dmenu-3.7-r1.ebuild:
+  Fix xinerama dependencies and CFLAGS for bug #232476
+
+  21 Jul 2008; nixnut <nixnut@gentoo.org> dmenu-3.7-r1.ebuild:
+  Stable on ppc wrt bug 232476
+
+  20 Jul 2008; Kenneth Prugh <ken69267@gentoo.org> dmenu-3.7-r1.ebuild:
+  amd64 stable, bug #232476
+
+  20 Jul 2008; Cédric Krier <cedk@gentoo.org> dmenu-3.2.ebuild,
+  dmenu-3.7-r1.ebuild:
+  Fix website
+
+  20 Jul 2008; Cédric Krier <cedk@gentoo.org> -dmenu-3.3.ebuild,
+  -dmenu-3.4.ebuild, -dmenu-3.5.ebuild, -dmenu-3.6.ebuild,
+  -dmenu-3.7.ebuild:
+  Remove old
+
+*dmenu-3.7-r1 (20 Jul 2008)
+
+  20 Jul 2008; Cédric Krier <cedk@gentoo.org> +files/dmenu-3.7.patch,
+  +dmenu-3.7-r1.ebuild:
+  Add patch for bug #231044
+
+  16 Jul 2008; Alexis Ballier <aballier@gentoo.org> dmenu-3.7.ebuild:
+  keyword ~x86-fbsd, thanks to Davide Italiano <dav_it@gentoo.org>, bug
+  #231216.
+
+*dmenu-3.7 (19 Jun 2008)
+
+  19 Jun 2008; Cédric Krier <cedk@gentoo.org> +dmenu-3.7.ebuild:
+  Version bump
+
+*dmenu-3.6 (04 Apr 2008)
+
+  04 Apr 2008; Cédric Krier <cedk@gentoo.org> +dmenu-3.6.ebuild:
+  Version bump
+
+*dmenu-3.5 (16 Mar 2008)
+
+  16 Mar 2008; Cédric Krier <cedk@gentoo.org> +dmenu-3.5.ebuild:
+  Version bump
+
+*dmenu-3.4 (16 Nov 2007)
+
+  16 Nov 2007; Cédric Krier <cedk@gentoo.org> +dmenu-3.4.ebuild:
+  Version bump
+
+*dmenu-3.3 (22 Sep 2007)
+
+  22 Sep 2007; Cédric Krier <cedk@gentoo.org> +dmenu-3.3.ebuild:
+  Version bump
+
+  25 Jul 2007; Christoph Mende <angelos@gentoo.org> dmenu-3.2.ebuild:
+  Stable on amd64 wrt bug #185308
+
+  16 Jul 2007; Markus Rothe <corsair@gentoo.org> dmenu-3.2.ebuild:
+  Stable on ppc64; bug #185310
+
+  16 Jul 2007; nixnut <nixnut@gentoo.org> dmenu-3.2.ebuild:
+  Stable on ppc wrt bug 185310
+
+  14 Jul 2007; Torsten Veller <tove@gentoo.org> dmenu-3.2.ebuild:
+  Stable on x86
+
+  14 Jul 2007; Cédric Krier <cedk@gentoo.org> -dmenu-3.0.ebuild,
+  -dmenu-3.1.ebuild:
+  Remove old
+
+*dmenu-3.2 (30 May 2007)
+
+  30 May 2007; Cédric Krier <cedk@gentoo.org> -dmenu-2.8.ebuild,
+  +dmenu-3.2.ebuild:
+  Version bump
+
+*dmenu-3.1 (21 May 2007)
+
+  21 May 2007; Cédric Krier <cedk@gentoo.org> +dmenu-3.1.ebuild:
+  Version bump
+
+*dmenu-3.0 (20 Apr 2007)
+
+  20 Apr 2007; Cedric Krier <cedk@gentoo.org> +dmenu-3.0.ebuild:
+  Version bump
+
+*dmenu-2.8 (07 Mar 2007)
+
+  07 Mar 2007; Cedric Krier <cedk@gentoo.org> -dmenu-2.5.ebuild,
+  -dmenu-2.6.ebuild, -dmenu-2.7.ebuild, +dmenu-2.8.ebuild:
+  Version bump
+
+*dmenu-2.7 (06 Mar 2007)
+
+  06 Mar 2007; Cedric Krier <cedk@gentoo.org> +dmenu-2.7.ebuild:
+  Version bump
+
+*dmenu-2.6 (02 Mar 2007)
+
+  02 Mar 2007; Cedric Krier <cedk@gentoo.org> -dmenu-2.2.ebuild,
+  +dmenu-2.6.ebuild:
+  Version bump
+
+*dmenu-2.5 (24 Feb 2007)
+
+  24 Feb 2007; Cedric Krier <cedk@gentoo.org> +dmenu-2.5.ebuild:
+  Version bump
+
+  24 Feb 2007; Cedric Krier <cedk@gentoo.org> -dmenu-2.1.ebuild:
+  Remove old version for bug #168044
+
+  22 Feb 2007; Cedric Krier <cedk@gentoo.org> dmenu-2.2.ebuild:
+  Fix savedconfig for bug #167995
+
+  20 Feb 2007; Cedric Krier <cedk@gentoo.org> -dmenu-2.0.ebuild:
+  Remove old
+
+*dmenu-2.2 (20 Feb 2007)
+
+  20 Feb 2007; Cedric Krier <cedk@gentoo.org> +dmenu-2.2.ebuild:
+  Version bump
+
+  28 Jan 2007; Cedric Krier <cedk@gentoo.org> dmenu-2.0.ebuild,
+  dmenu-2.1.ebuild:
+  Fix HOMEPAGE
+
+  27 Jan 2007; Cedric Krier <cedk@gentoo.org> -dmenu-1.8.ebuild,
+  -dmenu-1.8-r1.ebuild, -dmenu-1.9.ebuild:
+  Remove old
+
+  21 Jan 2007; nixnut <nixnut@gentoo.org> dmenu-2.1.ebuild:
+  Added ~ppc wrt bug 162326
+
+  20 Jan 2007; Markus Rothe <corsair@gentoo.org> dmenu-2.1.ebuild:
+  Added ~ppc64
+
+*dmenu-2.1 (17 Jan 2007)
+
+  17 Jan 2007; Cedric Krier <cedk@gentoo.org> +dmenu-2.1.ebuild:
+  Version bump
+
+*dmenu-2.0 (16 Jan 2007)
+
+  16 Jan 2007; Cedric Krier <cedk@gentoo.org> +dmenu-2.0.ebuild:
+  Version bump
+
+*dmenu-1.9 (13 Jan 2007)
+
+  13 Jan 2007; Cedric Krier <cedk@gentoo.org> +dmenu-1.9.ebuild:
+  Version bump
+
+  07 Jan 2007; Cedric Krier <cedk@gentoo.org> dmenu-1.8-r1.ebuild:
+  Improve pkg_preinst
+
+*dmenu-1.8-r1 (29 Dec 2006)
+
+  29 Dec 2006; Cedric Krier <cedk@gentoo.org> metadata.xml,
+  +dmenu-1.8-r1.ebuild:
+  Add savedconfig flag
+
+  28 Dec 2006; David Shakaryan <omp@gentoo.org> +dmenu-1.8.ebuild,
+  +metadata.xml:
+  Add x11-misc/dmenu to tree.
+

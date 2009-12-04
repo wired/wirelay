@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <herd>desktop-misc</herd>
+  <maintainer>
+    <email>omp@gentoo.org</email>
+    <name>David Shakaryan</name>
+  </maintainer>
+  <maintainer>
+    <email>cedk@gentoo.org</email>
+    <name>Cédric Krier</name>
+  </maintainer>
+  <maintainer>
+    <email>wired@gentoo.org</email>
+    <name>Alex Alexander</name>
+  </maintainer>
+  <use>
+	<flag name='vertical'>Use vertical patch</flag>
+  </use>
+</pkgmetadata>
