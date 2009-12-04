@@ -32,8 +32,8 @@ src_unpack() {
 		restore_config config.h
 	fi
 
-	# http://prog.marmaro.de/dwm-meillo/dmenu-4.0-vertical_meillo.diff
-	use vertical && epatch "${FILESDIR}"/"${P}"-vertical_meillo.diff
+	# http://bbs.archlinux.org/viewtopic.php?id=54086
+	use vertical && epatch "${FILESDIR}"/"${P}"-vertical.patch
 }
 
 src_compile() {
