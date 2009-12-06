@@ -24,7 +24,7 @@ RDEPEND="
 
 	>=x11-libs/gtk+-2.10
 	>=dev-libs/icu-3.8.1-r1
-	>=net-libs/libsoup-2.27.4
+	>=net-libs/libsoup-2.29.3
 	>=dev-db/sqlite-3
 	>=app-text/enchant-0.22
 	>=sys-devel/flex-2.5.33
@@ -54,10 +54,10 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Make it libtool-1 compatible
-	rm -v autotools/lt* autotools/libtool.m4 || die "removing libtool macros failed"
 	# Don't force -O2
 	sed -i 's/-O2//g' "${S}"/configure.ac || die "sed failed"
+	# missing in trunk
+	cp "${FILESDIR}"/gtk-doc.make . || die "gtk-doc.make cp failed"
 	# Prevent maintainer mode from being triggered during make
 	AT_M4DIR=autotools eautoreconf
 }
