@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit autotools git
+inherit autotools git eutils
 
 EGIT_REPO_URI="git://git.webkit.org/WebKit.git"
 DESCRIPTION="Open source web browser engine"
@@ -13,7 +13,7 @@ HOMEPAGE="http://www.webkit.org/"
 LICENSE="LGPL-2 LGPL-2.1 BSD"
 SLOT="0"
 KEYWORDS=""
-IUSE="coverage debug doc gnome-keyring +gstreamer pango"
+IUSE="coverage debug doc gnome-keyring +gstreamer pango windowless"
 
 RDEPEND="
 	dev-libs/libxml2
@@ -60,6 +60,9 @@ src_prepare() {
 	cp "${FILESDIR}"/gtk-doc.make . || die "gtk-doc.make cp failed"
 	# Prevent maintainer mode from being triggered during make
 	AT_M4DIR=autotools eautoreconf
+
+	# https://bugs.webkit.org/show_bug.cgi?id=18831
+	use windowless && epatch "${FILESDIR}"/gtk-windowless.patch
 }
 
 src_configure() {
