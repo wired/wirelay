@@ -1,3 +1,8 @@
+# Alex Alexander (wired) <alex.alexander@gmail.com> (18 Dec 2009)
+# testing versions
+~net-libs/libsoup-2.29.3
+~net-libs/libsoup-gnome-2.29.3
+
 # Alex Alexander (wired) <alex.alexander@gmail.com> (25 Apr 2009)
 # Masked nvidia-drivers 185.19 since 185.18.04 is newer (!)
 ~media-video/nvidia-settings-185.19
