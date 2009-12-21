@@ -24,7 +24,7 @@ RDEPEND="
 
 	>=x11-libs/gtk+-2.10
 	>=dev-libs/icu-3.8.1-r1
-	>=net-libs/libsoup-2.29.3
+	>=net-libs/libsoup-9999
 	>=dev-db/sqlite-3
 	>=app-text/enchant-0.22
 	>=sys-devel/flex-2.5.33
