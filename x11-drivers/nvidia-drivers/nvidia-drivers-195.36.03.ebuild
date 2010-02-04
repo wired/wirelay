@@ -247,7 +247,7 @@ src_prepare() {
 	# Use some more sensible gl headers and make way for new glext.h
 	epatch "${FILESDIR}"/NVIDIA_glx-glheader.patch
 
-	epatch "${FILESDIR}"/nvidia-vga-arbiter.patch
+	# epatch "${FILESDIR}"/nvidia-vga-arbiter.patch
 
 	if use kernel_linux; then
 		# Quiet down warnings the user does not need to see
