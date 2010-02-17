@@ -1,0 +1,30 @@
+--- a/common/atoms.list
++++ b/common/atoms.list
+@@ -6,7 +6,6 @@ _NET_NUMBER_OF_DESKTOPS
+ _NET_CURRENT_DESKTOP
+ _NET_DESKTOP_NAMES
+ _NET_ACTIVE_WINDOW
+-_NET_WORKAREA
+ _NET_DESKTOP_GEOMETRY
+ _NET_SUPPORTING_WM_CHECK
+ _NET_CLOSE_WINDOW
+--- a/ewmh.c
++++ b/ewmh.c
+@@ -70,7 +70,6 @@ ewmh_init(int phys_screen)
+         _NET_CURRENT_DESKTOP,
+         _NET_DESKTOP_NAMES,
+         _NET_ACTIVE_WINDOW,
+-        _NET_WORKAREA,
+         _NET_DESKTOP_GEOMETRY,
+         _NET_CLOSE_WINDOW,
+         _NET_WM_NAME,
+@@ -232,9 +231,6 @@ ewmh_update_workarea(int phys_screen)
+         area[4 * i + 3] = geom.height;
+     }
+ 
+-    xcb_change_property(globalconf.connection, XCB_PROP_MODE_REPLACE,
+-                        xutil_screen_get(globalconf.connection, phys_screen)->root,
+-                        _NET_WORKAREA, CARDINAL, 32, tags->len * 4, area);
+ }
+ 
+ void
