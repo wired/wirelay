@@ -1,0 +1,19 @@
+--- ewmh.c.old	2010-02-26 11:18:40.000000000 +0200
++++ ewmh.c	2010-02-26 12:04:00.000000000 +0200
+@@ -365,15 +365,7 @@
+     client_t *c;
+     int screen;
+ 
+-    if(ev->type == _NET_CURRENT_DESKTOP)
+-        for(screen = 0;
+-            screen < xcb_setup_roots_length(xcb_get_setup(globalconf.connection));
+-            screen++)
+-        {
+-            if(ev->window == xutil_screen_get(globalconf.connection, screen)->root)
+-                tag_view_only_byindex(&globalconf.screens.tab[screen], ev->data.data32[0]);
+-        }
+-    else if(ev->type == _NET_CLOSE_WINDOW)
++    if(ev->type == _NET_CLOSE_WINDOW)
+     {
+         if((c = client_getbywin(ev->window)))
+            client_kill(c);
