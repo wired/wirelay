@@ -49,11 +49,7 @@ src_prepare() {
 	cp "${FILESDIR}"/gtk-doc.make . || die "gtk-doc.make cp failed"
 	eautoreconf
 
-	# Fix test to follow POSIX (for x86-fbsd)
-	# No patch to prevent having to eautoreconf
-	sed -e 's/\(test.*\)==/\1=/g' -i configure.in configure || die "sed failed"
-
 	# Use lib present on the system
-	epatch "${FILESDIR}"/${PN}-2.28.1-system-lib.patch
+	epatch "${FILESDIR}"/${P}-system-lib.patch
 	eautoreconf
 }

@@ -46,8 +46,4 @@ src_prepare() {
 	# missing in trunk
 	cp "${FILESDIR}"/gtk-doc.make . || die "gtk-doc.make cp failed"
 	eautoreconf
-
-	# Fix test to follow POSIX (for x86-fbsd)
-	# No patch to prevent having to eautoreconf
-	sed -e 's/\(test.*\)==/\1=/g' -i configure.in configure || die "sed failed"
 }
