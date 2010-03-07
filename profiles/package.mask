@@ -1,3 +1,9 @@
+# Alex Alexander (wired) <alex.alexander@gmail.com> (25 Apr 2009)
+# masked nvidia-drivers 195.36.0{3,8} - WARNING - danger of overheating
+# nVidia reported that using these drivers might fry your card!
+# http://www.nvnews.net/vbulletin/announcement.php?f=14
+=x11-drivers/nvidia-drivers-195.36.0*
+
 # Alex Alexander (wired) <alex.alexander@gmail.com> (18 Dec 2009)
 # testing versions
 ~net-libs/libsoup-2.29.3
