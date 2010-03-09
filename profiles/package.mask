@@ -1,20 +1,20 @@
-# Alex Alexander (wired) <alex.alexander@gmail.com> (25 Apr 2009)
+# Alex Alexander <wired@gentoo.org> (25 Apr 2009)
 # masked nvidia-drivers 195.36.0{3,8} - WARNING - danger of overheating
 # nVidia reported that using these drivers might fry your card!
 # http://www.nvnews.net/vbulletin/announcement.php?f=14
 =x11-drivers/nvidia-drivers-195.36.0*
 
-# Alex Alexander (wired) <alex.alexander@gmail.com> (18 Dec 2009)
+# Alex Alexander <wired@gentoo.org> (18 Dec 2009)
 # testing versions
 ~net-libs/libsoup-2.29.3
 ~net-libs/libsoup-gnome-2.29.3
 
-# Alex Alexander (wired) <alex.alexander@gmail.com> (25 Apr 2009)
+# Alex Alexander <wired@gentoo.org> (25 Apr 2009)
 # Masked nvidia-drivers 185.19 since 185.18.04 is newer (!)
 ~media-video/nvidia-settings-185.19
 ~x11-drivers/nvidia-drivers-185.19
 
-# Alex Alexander (wired) <alex.alexander@gmail.com> (25 Apr 2009)
+# Alex Alexander <wired@gentoo.org> (25 Apr 2009)
 # Masked nvidia-drivers 190.16 because it fails miserably
 # with some nvidia models
 ~x11-drivers/nvidia-drivers-190.16
