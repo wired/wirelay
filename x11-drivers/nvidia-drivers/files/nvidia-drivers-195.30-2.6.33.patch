@@ -1,0 +1,1121 @@
+diff -ur a//usr/lib/libGL.la b//usr/lib/libGL.la
+--- a//usr/lib/libGL.la	2009-12-19 05:43:33.000000000 +0300
++++ b//usr/lib/libGL.la	2010-03-08 16:40:42.204312900 +0300
+@@ -11,7 +11,7 @@
+ library_names='libGL.so.195.30 libGL.so.1 libGL.so'
+ 
+ # Libraries that this one depends upon.
+-dependency_libs=' -L/usr/X11R6/lib -lm -lXext -lX11 -ldl'
++dependency_libs=' -L/usr/lib64 -lm -lXext -lX11 -ldl'
+ 
+ # Version information for libGL.
+ current=1
+diff -ur a//usr/lib32/libGL.la b//usr/lib32/libGL.la
+--- a//usr/lib32/libGL.la	2009-12-19 02:10:46.000000000 +0300
++++ b//usr/lib32/libGL.la	2010-03-08 16:40:57.231370796 +0300
+@@ -11,7 +11,7 @@
+ library_names='libGL.so.195.30 libGL.so.1 libGL.so'
+ 
+ # Libraries that this one depends upon.
+-dependency_libs=' -L/usr/X11R6/lib -lm -lXext -lX11 -ldl'
++dependency_libs=' -L/usr/lib -lm -lXext -lX11 -ldl'
+ 
+ # Version information for libGL.
+ current=1
+diff -ur a//usr/src/nv/conftest.sh b//usr/src/nv/conftest.sh
+--- a//usr/src/nv/conftest.sh	2009-12-19 05:44:00.000000000 +0300
++++ b//usr/src/nv/conftest.sh	2010-03-03 02:17:06.000000000 +0300
+@@ -33,14 +33,22 @@
+     # CONFIG_XEN and CONFIG_PARAVIRT are present, text_xen() treats
+     # the kernel as a stand-alone kernel.
+     #
+-    FILE="linux/autoconf.h"
++    OLD_FILE="linux/autoconf.h"
++    NEW_FILE="generated/autoconf.h"
+ 
+-    if [ -f $HEADERS/$FILE -o -f $OUTPUT/include/$FILE ]; then
++    if [ -f $HEADERS/$NEW_FILE -o -f $OUTPUT/include/$NEW_FILE ]; then
++        FILE=$NEW_FILE
++    fi
++    if [ -f $HEADERS/$OLD_FILE -o -f $OUTPUT/include/$OLD_FILE ]; then
++        FILE=$OLD_FILE
++    fi
++
++    if [ -n "$FILE" ]; then
+         #
+         # We are looking at a configured source tree; verify
+         # that it's not a Xen kernel.
+         #
+-        echo "#include <linux/autoconf.h>
++        echo "#include <$FILE>
+         #if defined(CONFIG_XEN) && !defined(CONFIG_PARAVIRT)
+         #error CONFIG_XEN defined!
+         #endif
+@@ -74,9 +82,20 @@
+ 
+     if [ "$OUTPUT" != "$SOURCES" ]; then
+         OUTPUT_CFLAGS="-I$OUTPUT/include2 -I$OUTPUT/include"
++        if [ -f "$OUTPUT/include/generated/autoconf.h" ]; then
++            AUTOCONF_CFLAGS="-include $OUTPUT/include/generated/autoconf.h"
++        else
++            AUTOCONF_CFLAGS="-include $OUTPUT/include/linux/autoconf.h"
++        fi
++    else
++        if [ -f "$HEADERS/generated/autoconf.h" ]; then
++            AUTOCONF_CFLAGS="-include $HEADERS/generated/autoconf.h"
++        else
++            AUTOCONF_CFLAGS="-include $HEADERS/linux/autoconf.h"
++        fi
+     fi
+ 
+-    CFLAGS="$CFLAGS $OUTPUT_CFLAGS -I$HEADERS"
++    CFLAGS="$CFLAGS $OUTPUT_CFLAGS -I$HEADERS $AUTOCONF_CFLAGS"
+ 
+     test_xen
+ 
+@@ -100,7 +119,7 @@
+         fi
+     fi
+ 
+-    CFLAGS="$BASE_CFLAGS $MACH_CFLAGS $OUTPUT_CFLAGS -I$HEADERS"
++    CFLAGS="$BASE_CFLAGS $MACH_CFLAGS $OUTPUT_CFLAGS -I$HEADERS $AUTOCONF_CFLAGS"
+ 
+     if [ "$ARCH" = "i386" -o "$ARCH" = "x86_64" ]; then
+         CFLAGS="$CFLAGS -I$SOURCES/arch/x86/include"
+@@ -110,8 +129,7 @@
+     fi
+ }
+ 
+-CONFTEST_PREAMBLE="#include <linux/autoconf.h>
+-    #if defined(CONFIG_XEN) && \
++CONFTEST_PREAMBLE="#if defined(CONFIG_XEN) && \
+         defined(CONFIG_XEN_INTERFACE_VERSION) &&  !defined(__XEN_INTERFACE_VERSION__)
+     #define __XEN_INTERFACE_VERSION__ CONFIG_XEN_INTERFACE_VERSION
+     #endif"
+@@ -892,6 +910,61 @@
+             fi
+         ;;
+ 
++        acpi_walk_namespace)
++            #
++            # Determine if the acpi_walk_namespace() function is present
++            # and how many arguments it takes.
++            #
++            echo "$CONFTEST_PREAMBLE
++            #include <acpi/acpi.h>
++            void conftest_acpi_walk_namespace(void) {
++                acpi_walk_namespace();
++            }" > conftest$$.c
++
++            $CC $CFLAGS -c conftest$$.c > /dev/null 2>&1
++            rm -f conftest$$.c
++
++            if [ -f conftest$$.o ]; then
++                rm -f conftest$$.o
++                echo "#undef NV_ACPI_WALK_NAMESPACE_PRESENT" >> conftest.h
++                return
++            fi
++
++            echo "$CONFTEST_PREAMBLE
++            #include <acpi/acpi.h>
++            void conftest_acpi_walk_namespace(void) {
++                acpi_walk_namespace(0, NULL, 0, NULL, NULL, NULL, NULL);
++            }" > conftest$$.c
++
++            $CC $CFLAGS -c conftest$$.c > /dev/null 2>&1
++            rm -f conftest$$.c
++
++            if [ -f conftest$$.o ]; then
++                rm -f conftest$$.o
++                echo "#define NV_ACPI_WALK_NAMESPACE_PRESENT" >> conftest.h
++                echo "#define NV_ACPI_WALK_NAMESPACE_ARGUMENT_COUNT 7 " >> conftest.h
++                return
++            fi
++
++            echo "$CONFTEST_PREAMBLE
++            #include <acpi/acpi.h>
++            void conftest_acpi_walk_namespace(void) {
++                acpi_walk_namespace(0, NULL, 0, NULL, NULL, NULL);
++            }" > conftest$$.c
++
++            $CC $CFLAGS -c conftest$$.c > /dev/null 2>&1
++            rm -f conftest$$.c
++
++            if [ -f conftest$$.o ]; then
++                rm -f conftest$$.o
++                echo "#define NV_ACPI_WALK_NAMESPACE_PRESENT" >> conftest.h
++                echo "#define NV_ACPI_WALK_NAMESPACE_ARGUMENT_COUNT 6 " >> conftest.h
++                return
++            else
++                echo "#error acpi_walk_namespace() conftest failed!" >> conftest.h
++            fi
++        ;;
++
+         ioremap_wc)
+             #
+             # Determine if the ioremap_wc() function is present.
+@@ -1303,16 +1376,25 @@
+         # output of `uname -r`.
+         #
+         RET=1
++        DIRS="generated linux"
+         FILE=""
++        
++        for DIR in $DIRS; do
++            if [ -f $HEADERS/$DIR/utsrelease.h ]; then
++                FILE="$HEADERS/$DIR/utsrelease.h"
++                break
++            elif [ -f $OUTPUT/include/$DIR/utsrelease.h ]; then
++                FILE="$OUTPUT/include/$DIR/utsrelease.h"
++                break
++            fi
++        done
+ 
+-        if [ -f $HEADERS/linux/utsrelease.h ]; then
+-            FILE="$HEADERS/linux/utsrelease.h"
+-        elif [ -f $OUTPUT/include/linux/utsrelease.h ]; then
+-            FILE="$OUTPUT/include/linux/utsrelease.h"
+-        elif [ -f $HEADERS/linux/version.h ]; then
+-            FILE="$HEADERS/linux/version.h"
+-        elif [ -f $OUTPUT/include/linux/version.h ]; then
+-            FILE="$OUTPUT/include/linux/version.h"
++        if [ -z "$FILE" ]; then
++            if [ -f $HEADERS/linux/version.h ]; then
++                FILE="$HEADERS/linux/version.h"
++            elif [ -f $OUTPUT/include/linux/version.h ]; then
++                FILE="$OUTPUT/include/linux/version.h"
++            fi
+         fi
+ 
+         if [ -n "$FILE" ]; then
+@@ -1365,9 +1447,17 @@
+         #
+         RET=1
+         VERBOSE=$7
+-        FILE="linux/autoconf.h"
++        OLD_FILE="linux/autoconf.h"
++        NEW_FILE="generated/autoconf.h"
+ 
+-        if [ -f $HEADERS/$FILE -o -f $OUTPUT/include/$FILE ]; then
++        if [ -f $HEADERS/$NEW_FILE -o -f $OUTPUT/include/$NEW_FILE ]; then
++            FILE=$NEW_FILE
++        fi
++        if [ -f $HEADERS/$OLD_FILE -o -f $OUTPUT/include/$OLD_FILE ]; then
++            FILE=$OLD_FILE
++        fi
++
++        if [ -n "$FILE" ]; then
+             #
+             # We are looking at a configured source tree; verify
+             # that its configuration doesn't include rivafb using
+@@ -1419,9 +1509,17 @@
+         #
+         RET=1
+         VERBOSE=$7
+-        FILE="linux/autoconf.h"
++        OLD_FILE="linux/autoconf.h"
++        NEW_FILE="generated/autoconf.h"
+ 
+-        if [ -f $HEADERS/$FILE -o -f $OUTPUT/include/$FILE ]; then
++        if [ -f $HEADERS/$NEW_FILE -o -f $OUTPUT/include/$NEW_FILE ]; then
++            FILE=$NEW_FILE
++        fi
++        if [ -f $HEADERS/$OLD_FILE -o -f $OUTPUT/include/$OLD_FILE ]; then
++            FILE=$OLD_FILE
++        fi
++
++        if [ -n "$FILE" ]; then
+             #
+             # We are looking at a configured source tree; verify
+             # that its configuration doesn't include nvidiafb using
+@@ -1527,7 +1625,7 @@
+         # Run a series of compile tests to determine the set of interfaces
+         # and features available in the target kernel.
+         #
+-        FILES="linux/semaphore.h"
++        FILES="linux/semaphore.h generated/autoconf.h"
+         shift 5
+ 
+         rm -f conftest.h
+diff -ur a//usr/src/nv/Makefile.kbuild b//usr/src/nv/Makefile.kbuild
+--- a//usr/src/nv/Makefile.kbuild	2009-12-19 05:44:00.000000000 +0300
++++ b//usr/src/nv/Makefile.kbuild	2010-03-08 16:37:11.611524601 +0300
+@@ -137,7 +137,7 @@
+ # NVIDIA specific CFLAGS and #define's.
+ #
+ 
+-EXTRA_CFLAGS += -D__KERNEL__ -DMODULE -DNVRM -DNV_VERSION_STRING=\"195.30\" -UDEBUG -U_DEBUG -DNDEBUG
++EXTRA_CFLAGS += -D__KERNEL__ -DMODULE -DNVRM -DNV_VERSION_STRING=\"195.30\" -UDEBUG -U_DEBUG -DNDEBUG -UNVMEMDBG
+ 
+ 
+ COMPILE_TESTS = \
+@@ -149,6 +149,7 @@
+  change_page_attr \
+  i2c_adapter \
+  pci_get_class \
++ acpi_walk_namespace \
+  pm_message_t \
+  irq_handler_t \
+  pci_choose_state \
+diff -ur a//usr/src/nv/Makefile.nvidia b//usr/src/nv/Makefile.nvidia
+--- a//usr/src/nv/Makefile.nvidia	2009-12-19 05:44:00.000000000 +0300
++++ b//usr/src/nv/Makefile.nvidia	2010-03-07 16:59:17.988033556 +0300
+@@ -10,7 +10,12 @@
+ OBJECTS=nv.o nv_gvi.o nv-vm.o os-agp.o os-interface.o os-registry.o nv-i2c.o nvacpi.o 
+ HEADERS=os-agp.h os-interface.h nv-linux.h nv-misc.h nv-memdbg.h nv-reg.h nv-vm.h nv.h rmil.h rmretval.h cpuopsys.h nvtypes.h xapi-sdk.h nvacpitypes.h nvreadme.h nv-xen.h $(VERSION_HDR) conftest.h patches.h
+ 
+-CFLAGS=-Wall -Wimplicit -Wreturn-type -Wswitch -Wformat -Wchar-subscripts -Wparentheses -Wpointer-arith -Wno-multichar   -Werror -O -mcmodel=kernel -mno-red-zone -fno-defer-pop -UDEBUG -U_DEBUG -DNDEBUG -MD $(DEFINES) $(INCLUDES) -Wsign-compare -Wno-cast-qual -Wno-error
++CFLAGS=-Wall -Wimplicit -Wreturn-type -Wswitch -Wformat \
++	-Wchar-subscripts -Wparentheses -Wpointer-arith \
++	-Wno-multichar -Werror -O -mcmodel=kernel \
++	-mno-red-zone -fno-defer-pop -UDEBUG -U_DEBUG -DNDEBUG \
++	-MD $(DEFINES) $(INCLUDES) -Wsign-compare \
++	-Wno-cast-qual -Wno-error
+ 
+ CORE_OBJECTS=nv-kernel.o
+ 
+Только в b//usr/src/nv: modules.order
+Только в b//usr/src/nv: Module.symvers
+diff -ur a//usr/src/nv/nvacpi.c b//usr/src/nv/nvacpi.c
+--- a//usr/src/nv/nvacpi.c	2009-12-19 05:43:56.000000000 +0300
++++ b//usr/src/nv/nvacpi.c	2010-03-03 02:17:06.000000000 +0300
+@@ -506,7 +506,7 @@
+ 
+     *handlesPresent = 0;
+ 
+-    acpi_walk_namespace(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, 
++    NV_ACPI_WALK_NAMESPACE(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
+                         ACPI_UINT32_MAX, nv_acpi_find_methods, NULL, NULL);
+ 
+     if (nvif_handle)
+@@ -1185,7 +1185,8 @@
+             "NAMESPACE INVALID\n");
+     }
+ 
+-    acpi_walk_namespace(ACPI_TYPE_ANY, handle, 1, nv_acpi_walk_callback, acpi_name, NULL);
++    NV_ACPI_WALK_NAMESPACE(ACPI_TYPE_ANY, handle,
++                        1, nv_acpi_walk_callback, acpi_name, NULL);
+ 
+     os_free_mem(acpi_name);
+ }
+diff -ur a//usr/src/nv/nv.c b//usr/src/nv/nv.c
+--- a//usr/src/nv/nv.c	2009-12-19 05:43:54.000000000 +0300
++++ b//usr/src/nv/nv.c	2010-03-03 02:17:06.000000000 +0300
+@@ -2012,23 +2012,22 @@
+     init_waitqueue_head(&nvfp->waitqueue);
+     NV_SPIN_LOCK_INIT(&nvfp->fp_lock);
+ 
+-    NV_KMALLOC(nvfp->event_fifo, sizeof(nv_event_t) * NV_EVENT_FIFO_SIZE);
+-    if (nvfp->event_fifo == NULL)
+-    {
+-        NV_KFREE(nvfp, sizeof(nv_file_private_t));
+-        return NULL;
+-    }
+-
+     return nvfp;
+ }
+ 
+ static void
+ nv_free_file_private(nv_file_private_t *nvfp)
+ {
++    nvidia_event_t *nvet;
++
+     if (nvfp == NULL)
+         return;
+ 
+-    NV_KFREE(nvfp->event_fifo, sizeof(nv_event_t) * NV_EVENT_FIFO_SIZE);
++    for (nvet = nvfp->event_head; nvet != NULL; nvet = nvfp->event_head)
++    {
++        nvfp->event_head = nvfp->event_head->next;
++        NV_KFREE(nvet, sizeof(nvidia_event_t));
++    }
+     NV_KFREE(nvfp, sizeof(nv_file_private_t));
+ }
+ 
+@@ -2790,7 +2789,7 @@
+     NV_SPIN_LOCK_IRQSAVE(&nvfp->fp_lock, eflags);
+ 
+     // wake the user on any event
+-    if (nvfp->num_events)
++    if (nvfp->event_head != NULL)
+     {
+         nv_printf(NV_DBG_EVENTINFO, "NVRM: Hey, an event occured!\n");
+         // trigger the client, when they grab the event, 
+@@ -4202,30 +4201,32 @@
+     struct file *file = (struct file *) event->file;
+     nv_file_private_t *nvfp = NV_GET_FILE_PRIVATE(file);
+     unsigned long eflags;
++    nvidia_event_t *nvet;
+ 
+     nv_printf(NV_DBG_EVENTINFO, "NVRM: posting event on 0x%x:0x%x\n",
+         event, nvfp);
+ 
+-    NV_SPIN_LOCK_IRQSAVE(&nvfp->fp_lock, eflags);
++    NV_KMALLOC_ATOMIC(nvet, sizeof(nvidia_event_t));
+ 
+-    if (nvfp->num_events == NV_EVENT_FIFO_SIZE)
+-    {
+-        wake_up_interruptible(&nvfp->waitqueue);
+-        NV_SPIN_UNLOCK_IRQRESTORE(&nvfp->fp_lock, eflags);
++    if (nvet == NULL)
+         return;
+-    }
++
++    NV_SPIN_LOCK_IRQSAVE(&nvfp->fp_lock, eflags);
++
++    // Insert the event struct in the queue
++    if (nvfp->event_tail != NULL)
++        nvfp->event_tail->next = nvet;
++    if (nvfp->event_head == NULL)
++        nvfp->event_head = nvet;
++    nvfp->event_tail = nvet;
++    nvet->next = NULL;
+ 
+     // copy the event into the queue
+-    nvfp->event_fifo[nvfp->put] = *event;
++    nvet->event         = *event;
+ 
+     // set the handle for this event
+-    nvfp->event_fifo[nvfp->put].hObject = handle;
+-    nvfp->event_fifo[nvfp->put].index   = index;
+-    
+-    nvfp->num_events++;
+-    nvfp->put++;
+-    if (nvfp->put >= NV_EVENT_FIFO_SIZE)
+-        nvfp->put = 0;
++    nvet->event.hObject = handle;
++    nvet->event.index   = index;
+ 
+     wake_up_interruptible(&nvfp->waitqueue);
+     NV_SPIN_UNLOCK_IRQRESTORE(&nvfp->fp_lock, eflags);
+@@ -4240,23 +4241,28 @@
+ {
+     struct file *file = (struct file *) void_file;
+     nv_file_private_t *nvfp = NV_GET_FILE_PRIVATE(file);
++    nvidia_event_t *nvet;
+     unsigned long eflags;
+ 
+     NV_SPIN_LOCK_IRQSAVE(&nvfp->fp_lock, eflags);
+-    if (nvfp->num_events == 0)
++    if (nvfp->event_head == NULL)
+     {
+         NV_SPIN_UNLOCK_IRQRESTORE(&nvfp->fp_lock, eflags);
+         return -1;
+     }
+ 
+-    *event = nvfp->event_fifo[nvfp->get];
+-    nvfp->num_events--;
+-    nvfp->get++;
+-    if (nvfp->get >= NV_EVENT_FIFO_SIZE)
+-        nvfp->get = 0;
++    nvet = nvfp->event_head;
++
++    *event = nvet->event;
++    
++    if (nvfp->event_tail == nvet)
++        nvfp->event_tail = NULL;
++    nvfp->event_head = nvet->next;
++
++    NV_KFREE(nvet, sizeof(nvidia_event_t));
+ 
+     if (more_events)
+-        *more_events = nvfp->num_events;
++        *more_events = (nvfp->event_head != NULL);
+ 
+     nv_printf(NV_DBG_EVENTINFO, "NVRM: returning event: 0x%x\n", event);
+     nv_printf(NV_DBG_EVENTINFO, "NVRM:     hParent: 0x%x\n", event->hParent);
+@@ -4737,6 +4743,10 @@
+ 
+     pci_set_master(dev);
+ 
++#if defined(CONFIG_VGA_ARB)
++    vga_set_legacy_decoding(dev, VGA_RSRC_NONE);
++#endif
++
+     if (NV_IS_GVI_DEVICE(nv))
+     {
+         if (!rm_gvi_init_private_state(sp, nv))
+diff -ur a//usr/src/nv/nv.h b//usr/src/nv/nv.h
+--- a//usr/src/nv/nv.h	2009-12-19 05:43:59.000000000 +0300
++++ b//usr/src/nv/nv.h	2010-03-03 02:17:06.000000000 +0300
+@@ -184,9 +184,9 @@
+ 
+ typedef union
+ {
+-    volatile V008 Reg008[1];
+-    volatile V016 Reg016[1];
+-    volatile V032 Reg032[1];
++    volatile NvV8 Reg008[1];
++    volatile NvV16 Reg016[1];
++    volatile NvV32 Reg032[1];
+ } nv_hwreg_t, * nv_phwreg_t;
+ 
+ 
+@@ -228,9 +228,9 @@
+ 
+ typedef struct nv_stack_s
+ {
+-    U032  size;
++    NvU32 size;
+     void *top;
+-    U008  stack[NV_STACK_SIZE-16] __attribute__ ((aligned(16)));
++    NvU8  stack[NV_STACK_SIZE-16] __attribute__ ((aligned(16)));
+ } nv_stack_t;
+ 
+ /*
+@@ -269,14 +269,14 @@
+     int    flags;
+ 
+     /* PCI config info */
+-    U016 bus;
+-    U016 slot;
+-    U016 vendor_id;
+-    U016 device_id;
+-    U016 subsystem_id;
++    NvU16 bus;
++    NvU16 slot;
++    NvU16 vendor_id;
++    NvU16 device_id;
++    NvU16 subsystem_id;
+     void *handle;
+ 
+-    U032 pci_cfg_space[16];
++    NvU32 pci_cfg_space[16];
+ 
+     /* physical characteristics */
+     nv_aperture_t bars[NV_GPU_NUM_BARS];
+@@ -286,14 +286,14 @@
+ 
+     NvU32  interrupt_line;
+ 
+-    U032 agp_config;
+-    U032 agp_status;
++    NvU32 agp_config;
++    NvU32 agp_status;
+ 
+     NvU32 primary_vga;
+ 
+-    U032 sim_env;
++    NvU32 sim_env;
+ 
+-    U032 rc_timer_enabled;
++    NvU32 rc_timer_enabled;
+ 
+     /* list of events allocated for this device */
+     nv_event_t *event_list;
+@@ -305,10 +305,10 @@
+ typedef struct
+ {
+     /* PCI config info */
+-    U016 bus;
+-    U016 slot;
+-    U016 vendor_id;
+-    U016 device_id;
++    NvU16 bus;
++    NvU16 slot;
++    NvU16 vendor_id;
++    NvU16 device_id;
+     void *handle;
+     nv_aperture_t bar0;
+     nv_aperture_t *regs;
+@@ -516,44 +516,44 @@
+ 
+ NvU64  NV_API_CALL  nv_dma_to_mmap_token         (nv_state_t *, NvU64);
+ 
+-void*  NV_API_CALL  nv_alloc_kernel_mapping      (nv_state_t *, NvU64, U032, void **);
+-S032   NV_API_CALL  nv_free_kernel_mapping       (nv_state_t *, void *, void *, BOOL);
++void*  NV_API_CALL  nv_alloc_kernel_mapping      (nv_state_t *, NvU64, NvU32, void **);
++NvS32  NV_API_CALL  nv_free_kernel_mapping       (nv_state_t *, void *, void *, BOOL);
+ 
+ NvU64  NV_API_CALL  nv_get_kern_phys_address     (NvU64);
+ NvU64  NV_API_CALL  nv_get_user_phys_address     (NvU64);
+-void*  NV_API_CALL  nv_get_adapter_state         (U016, U016);
++void*  NV_API_CALL  nv_get_adapter_state         (NvU16, NvU16);
+ 
+ void   NV_API_CALL  nv_lock_rm                   (nv_state_t *);
+ void   NV_API_CALL  nv_unlock_rm                 (nv_state_t *);
+ 
+-void   NV_API_CALL  nv_set_dma_address_size      (nv_state_t *, U032 );
++void   NV_API_CALL  nv_set_dma_address_size      (nv_state_t *, NvU32 );
+ 
+-RM_STATUS  NV_API_CALL  nv_alias_pages           (nv_state_t *, U032, U032, U032, NvU64, NvU64 *, void **);
+-RM_STATUS  NV_API_CALL  nv_alloc_pages           (nv_state_t *, U032, U032, U032, U032, NvU64 *, void **);
+-RM_STATUS  NV_API_CALL  nv_free_pages            (nv_state_t *, U032, U032, U032, U032, void *);
++RM_STATUS  NV_API_CALL  nv_alias_pages           (nv_state_t *, NvU32, NvU32, NvU32, NvU64, NvU64 *, void **);
++RM_STATUS  NV_API_CALL  nv_alloc_pages           (nv_state_t *, NvU32, NvU32, NvU32, NvU32, NvU64 *, void **);
++RM_STATUS  NV_API_CALL  nv_free_pages            (nv_state_t *, NvU32, NvU32, NvU32, NvU32, void *);
+ RM_STATUS  NV_API_CALL  nv_guest_pfn_list        (nv_state_t *, unsigned int, unsigned int, unsigned int, unsigned int*);
+ 
+-RM_STATUS  NV_API_CALL  nv_agp_init              (nv_state_t *, void **, void *, U032);
++RM_STATUS  NV_API_CALL  nv_agp_init              (nv_state_t *, void **, void *, NvU32);
+ RM_STATUS  NV_API_CALL  nv_agp_teardown          (nv_state_t *);
+ 
+-S032   NV_API_CALL  nv_start_rc_timer            (nv_state_t *);
+-S032   NV_API_CALL  nv_stop_rc_timer             (nv_state_t *);
++NvS32  NV_API_CALL  nv_start_rc_timer            (nv_state_t *);
++NvS32  NV_API_CALL  nv_stop_rc_timer             (nv_state_t *);
+ 
+-void   NV_API_CALL  nv_post_event                (nv_state_t *, nv_event_t *, U032, U032);
+-S032   NV_API_CALL  nv_get_event                 (nv_state_t *, void *, nv_event_t *, U032 *);
++void   NV_API_CALL  nv_post_event                (nv_state_t *, nv_event_t *, NvU32, NvU32);
++NvS32  NV_API_CALL  nv_get_event                 (nv_state_t *, void *, nv_event_t *, NvU32 *);
+ 
+-S032   NV_API_CALL  nv_no_incoherent_mappings    (void);
++NvS32  NV_API_CALL  nv_no_incoherent_mappings    (void);
+ 
+ void   NV_API_CALL  nv_verify_pci_config         (nv_state_t *, BOOL);
+ 
+-void*  NV_API_CALL  nv_i2c_add_adapter           (nv_state_t *, U032);
++void*  NV_API_CALL  nv_i2c_add_adapter           (nv_state_t *, NvU32);
+ BOOL   NV_API_CALL  nv_i2c_del_adapter           (nv_state_t *, void *);
+ 
+-void   NV_API_CALL  nv_acpi_methods_init         (U032 *);
++void   NV_API_CALL  nv_acpi_methods_init         (NvU32 *);
+ void   NV_API_CALL  nv_acpi_methods_uninit       (void);
+ 
+-RM_STATUS  NV_API_CALL  nv_acpi_method           (U032, U032, U032, void *, U016, U032 *, void *, U016 *);
+-RM_STATUS  NV_API_CALL  nv_acpi_dsm_method       (U008 *, U032, U032, void *, U016, U032 *, void *, U016 *);
++RM_STATUS  NV_API_CALL  nv_acpi_method           (NvU32, NvU32, NvU32, void *, NvU16, NvU32 *, void *, NvU16 *);
++RM_STATUS  NV_API_CALL  nv_acpi_dsm_method       (NvU8 *, NvU32, NvU32, void *, NvU16, NvU32 *, void *, NvU16 *);
+ void*  NV_API_CALL  nv_get_smu_state             (void); 
+ 
+ #ifdef NV_USER_MAP
+@@ -581,47 +581,47 @@
+ BOOL       NV_API_CALL  rm_disable_adapter       (nv_stack_t *, nv_state_t *);
+ BOOL       NV_API_CALL  rm_shutdown_adapter      (nv_stack_t *, nv_state_t *);
+ void       NV_API_CALL  rm_set_interrupts        (nv_stack_t *, BOOL);
+-BOOL       NV_API_CALL  rm_ioctl                 (nv_stack_t *, nv_state_t *, void *, U032, void *);
+-BOOL       NV_API_CALL  rm_isr                   (nv_stack_t *, nv_state_t *, U032 *);
++BOOL       NV_API_CALL  rm_ioctl                 (nv_stack_t *, nv_state_t *, void *, NvU32, void *);
++BOOL       NV_API_CALL  rm_isr                   (nv_stack_t *, nv_state_t *, NvU32 *);
+ void       NV_API_CALL  rm_isr_bh                (nv_stack_t *, nv_state_t *);
+-RM_STATUS  NV_API_CALL  rm_power_management      (nv_stack_t *, nv_state_t *, U032, U032);
++RM_STATUS  NV_API_CALL  rm_power_management      (nv_stack_t *, nv_state_t *, NvU32, NvU32);
+ RM_STATUS  NV_API_CALL  rm_save_low_res_mode     (nv_stack_t *, nv_state_t *);
+-U032       NV_API_CALL  rm_get_vbios_version     (nv_stack_t *, nv_state_t *, U032 *, U032 *, U032 *, U032 *, U032 *);
++NvU32      NV_API_CALL  rm_get_vbios_version     (nv_stack_t *, nv_state_t *, NvU32 *, NvU32 *, NvU32 *, NvU32 *, NvU32 *);
+ void       NV_API_CALL  rm_free_unused_clients   (nv_stack_t *, nv_state_t *, void *);
+ 
+ void       NV_API_CALL  rm_update_agp_config     (nv_stack_t *, nv_state_t *);
+ RM_STATUS  NV_API_CALL  rm_init_agp              (nv_stack_t *, nv_state_t *);
+ RM_STATUS  NV_API_CALL  rm_teardown_agp          (nv_stack_t *, nv_state_t *);
+ 
+-RM_STATUS  NV_API_CALL  rm_alloc_agp_pages       (nv_stack_t *, nv_state_t *, U032, void **, U032 *);
++RM_STATUS  NV_API_CALL  rm_alloc_agp_pages       (nv_stack_t *, nv_state_t *, NvU32, void **, NvU32 *);
+ RM_STATUS  NV_API_CALL  rm_free_agp_pages        (nv_stack_t *, nv_state_t *, void *);
+ 
+-RM_STATUS  NV_API_CALL  rm_alloc_agp_bitmap      (nv_stack_t *, nv_state_t *, U032, U032 *);
+-RM_STATUS  NV_API_CALL  rm_free_agp_bitmap       (nv_stack_t *, nv_state_t *, U032, U032);
++RM_STATUS  NV_API_CALL  rm_alloc_agp_bitmap      (nv_stack_t *, nv_state_t *, NvU32, NvU32 *);
++RM_STATUS  NV_API_CALL  rm_free_agp_bitmap       (nv_stack_t *, nv_state_t *, NvU32, NvU32);
+ RM_STATUS  NV_API_CALL  rm_set_agp_bitmap        (nv_stack_t *, nv_state_t *, void *);
+ RM_STATUS  NV_API_CALL  rm_clear_agp_bitmap      (nv_stack_t *, nv_state_t *, void **);
+ 
+-RM_STATUS  NV_API_CALL  rm_read_registry_dword   (nv_stack_t *, nv_state_t *, U008 *, U008 *, U032 *);
+-RM_STATUS  NV_API_CALL  rm_write_registry_dword  (nv_stack_t *, nv_state_t *, U008 *, U008 *, U032);
+-RM_STATUS  NV_API_CALL  rm_read_registry_binary  (nv_stack_t *, nv_state_t *, U008 *, U008 *, U008 *, U032 *);
+-RM_STATUS  NV_API_CALL  rm_write_registry_binary (nv_stack_t *, nv_state_t *, U008 *, U008 *, U008 *, U032);
++RM_STATUS  NV_API_CALL  rm_read_registry_dword   (nv_stack_t *, nv_state_t *, NvU8 *, NvU8 *, NvU32 *);
++RM_STATUS  NV_API_CALL  rm_write_registry_dword  (nv_stack_t *, nv_state_t *, NvU8 *, NvU8 *, NvU32);
++RM_STATUS  NV_API_CALL  rm_read_registry_binary  (nv_stack_t *, nv_state_t *, NvU8 *, NvU8 *, NvU8 *, NvU32 *);
++RM_STATUS  NV_API_CALL  rm_write_registry_binary (nv_stack_t *, nv_state_t *, NvU8 *, NvU8 *, NvU8 *, NvU32);
+ 
+ RM_STATUS  NV_API_CALL  rm_run_rc_callback       (nv_stack_t *, nv_state_t *);
+-RM_STATUS  NV_API_CALL  rm_get_device_name       (nv_stack_t *, nv_state_t *, U032, U032, U008*);
++RM_STATUS  NV_API_CALL  rm_get_device_name       (nv_stack_t *, nv_state_t *, NvU32, NvU32, NvU8*);
+ 
+ NvU64      NV_API_CALL  nv_rdtsc                 (void);
+ 
+ void       NV_API_CALL  rm_register_compatible_ioctls   (nv_stack_t *);
+ void       NV_API_CALL  rm_unregister_compatible_ioctls (nv_stack_t *);
+ 
+-BOOL       NV_API_CALL  rm_is_legacy_device      (nv_stack_t *, U016, BOOL);
++BOOL       NV_API_CALL  rm_is_legacy_device      (nv_stack_t *, NvU16, BOOL);
+ BOOL       NV_API_CALL  rm_is_supported_device   (nv_stack_t *, nv_state_t *);
+ 
+-RM_STATUS  NV_API_CALL  rm_i2c_read_buffer        (nv_stack_t *, nv_state_t *, void *, U008, U032, U008 *);
+-RM_STATUS  NV_API_CALL  rm_i2c_write_buffer       (nv_stack_t *, nv_state_t *, void *, U008, U032, U008 *);
+-RM_STATUS  NV_API_CALL  rm_i2c_smbus_write_quick  (nv_stack_t *, nv_state_t *, void *, U008, U008);
+-RM_STATUS  NV_API_CALL  rm_i2c_smbus_read_buffer  (nv_stack_t *, nv_state_t *, void *, U008, U008, U032, U008 *);
+-RM_STATUS  NV_API_CALL  rm_i2c_smbus_write_buffer (nv_stack_t *, nv_state_t *, void *, U008, U008, U032, U008 *);
++RM_STATUS  NV_API_CALL  rm_i2c_read_buffer        (nv_stack_t *, nv_state_t *, void *, NvU8, NvU32, NvU8 *);
++RM_STATUS  NV_API_CALL  rm_i2c_write_buffer       (nv_stack_t *, nv_state_t *, void *, NvU8, NvU32, NvU8 *);
++RM_STATUS  NV_API_CALL  rm_i2c_smbus_write_quick  (nv_stack_t *, nv_state_t *, void *, NvU8, NvU8);
++RM_STATUS  NV_API_CALL  rm_i2c_smbus_read_buffer  (nv_stack_t *, nv_state_t *, void *, NvU8, NvU8, NvU32, NvU8 *);
++RM_STATUS  NV_API_CALL  rm_i2c_smbus_write_buffer (nv_stack_t *, nv_state_t *, void *, NvU8, NvU8, NvU32, NvU8 *);
+ 
+ void       NV_API_CALL  rm_check_pci_config_space (nv_stack_t *, nv_state_t *nv, BOOL, BOOL, BOOL);
+ 
+@@ -629,7 +629,7 @@
+ 
+ RM_STATUS  NV_API_CALL  rm_perform_version_check  (nv_stack_t *, nv_ioctl_rm_api_version_t *);
+ 
+-RM_STATUS  NV_API_CALL  rm_system_event           (nv_stack_t *, U032, U032);
++RM_STATUS  NV_API_CALL  rm_system_event           (nv_stack_t *, NvU32, NvU32);
+ RM_STATUS  NV_API_CALL  rm_init_smu               (nv_stack_t *, nv_smu_state_t *);
+ RM_STATUS  NV_API_CALL  rm_shutdown_smu           (nv_stack_t *, nv_smu_state_t *);
+ RM_STATUS  NV_API_CALL  rm_suspend_smu            (nv_stack_t *);
+diff -ur a//usr/src/nv/nv-linux.h b//usr/src/nv/nv-linux.h
+--- a//usr/src/nv/nv-linux.h	2009-12-19 05:43:58.000000000 +0300
++++ b//usr/src/nv/nv-linux.h	2010-03-03 02:17:06.000000000 +0300
+@@ -13,14 +13,19 @@
+ #define _NV_LINUX_H_
+ 
+ #include "nv.h"
++#include "conftest.h"
+ 
+ #ifndef AUTOCONF_INCLUDED
++#if defined(NV_GENERATED_AUTOCONF_H_PRESENT)
++#include <generated/autoconf.h>
++#else
+ #include <linux/autoconf.h>
+ #endif
++#endif
++
+ #include <linux/version.h>
+ #include <linux/utsname.h>
+ 
+-
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 4, 7)
+ #  error This driver does not support 2.4 kernels older than 2.4.7!
+ #elif LINUX_VERSION_CODE < KERNEL_VERSION(2, 5, 0)
+@@ -33,8 +38,6 @@
+ #  error This driver does not support development kernels!
+ #endif
+ 
+-#include "conftest.h"
+-
+ #if defined(KERNEL_2_4)
+ #define NV_KMEM_CACHE_CREATE_PRESENT
+ #define NV_KMEM_CACHE_CREATE_ARGUMENT_COUNT 6
+@@ -109,6 +112,10 @@
+ #include <asm/ioctl32.h>            /* sys_ioctl() (ioctl32)            */
+ #endif
+ 
++#if defined(CONFIG_VGA_ARB)
++#include <linux/vgaarb.h>
++#endif
++
+ #include <linux/spinlock.h>
+ #if defined(NV_LINUX_SEMAPHORE_H_PRESENT)
+ #include <linux/semaphore.h>
+@@ -198,6 +205,16 @@
+ #endif
+ #endif
+ 
++#if defined(KERNEL_2_4) || \
++    (NV_ACPI_WALK_NAMESPACE_ARGUMENT_COUNT == 6)
++#define NV_ACPI_WALK_NAMESPACE(type, args...) acpi_walk_namespace(type, args)
++#elif (NV_ACPI_WALK_NAMESPACE_ARGUMENT_COUNT == 7)
++#define NV_ACPI_WALK_NAMESPACE(type, args...) \
++    acpi_walk_namespace(type, args, NULL)
++#else
++#error "NV_ACPI_WALK_NAMESPACE_ARGUMENT_COUNT value unrecognized!"
++#endif
++
+ #if defined(CONFIG_PREEMPT_RT)
+ typedef atomic_spinlock_t         nv_spinlock_t;
+ #define NV_SPIN_LOCK_INIT(lock)   atomic_spin_lock_init(lock)
+@@ -379,14 +396,14 @@
+ #define NV_MEM_TRACKING_PAD_SIZE(size)   ((size) += sizeof(void *))
+ #define NV_MEM_TRACKING_HIDE_SIZE(ptr, size)            \
+     if ((ptr) && *(ptr)) {                              \
+-        U008 *__ptr;                                    \
++        NvU8 *__ptr;                                    \
+         *(unsigned long *) *(ptr) = (size);             \
+         __ptr = *(ptr); __ptr += sizeof(void *);        \
+         *(ptr) = (void *) __ptr;                        \
+     }
+ #define NV_MEM_TRACKING_RETRIEVE_SIZE(ptr, size)        \
+     {                                                   \
+-        U008 *__ptr = (ptr); __ptr -= sizeof(void *);   \
++        NvU8 *__ptr = (ptr); __ptr -= sizeof(void *);   \
+         (ptr) = (void *) __ptr;                         \
+         size = *(unsigned long *) (ptr);                \
+     }
+@@ -434,7 +451,7 @@
+ 
+ #if defined(VM_CHECKER)
+ /* kernel virtual memory usage/allocation information */
+-extern U032 vm_usage;
++extern NvU32 vm_usage;
+ extern struct mem_track_t *vm_list;
+ extern nv_spinlock_t vm_lock;
+ 
+@@ -477,7 +494,7 @@
+ 
+ #if defined(KM_CHECKER)
+ /* kernel logical memory usage/allocation information */
+-extern U032 km_usage;
++extern NvU32 km_usage;
+ extern struct mem_track_t *km_list;
+ extern nv_spinlock_t km_lock;
+ 
+@@ -783,6 +800,12 @@
+ #  define NV_MODULE_STRING_PARAMETER(x) MODULE_PARM(x, "s")
+ #endif
+ 
++#if !defined(NV_NO_IN_ATOMIC)
++#define NV_IN_ATOMIC()                  in_atomic()
++#else
++#define NV_IN_ATOMIC()                  (0)
++#endif
++
+ #if !defined(KERNEL_2_4)
+ #  define NV_IS_SUSER()                 capable(CAP_SYS_ADMIN)
+ #  define NV_PCI_DEVICE_NAME(dev)       ((dev)->pretty_name)
+@@ -790,16 +813,9 @@
+ #  define NV_CLI()                      local_irq_disable()
+ #  define NV_SAVE_FLAGS(eflags)         local_save_flags(eflags)
+ #  define NV_RESTORE_FLAGS(eflags)      local_irq_restore(eflags)
+-#ifdef NV_NO_IN_ATOMIC
+-#  define NV_MAY_SLEEP()                (!in_interrupt())
+-#else /* NV_NO_IN_ATOMIC */
+-#  define NV_MAY_SLEEP()                (!in_interrupt() && !in_atomic())
+-#endif /* NV_NO_IN_ATOMIC */
++#  define NV_MAY_SLEEP()                (!irqs_disabled() && !in_interrupt() && !NV_IN_ATOMIC())
+ #  define NV_MODULE_PARAMETER(x)        module_param(x, int, 0)
+ #  define NV_MODULE_STRING_PARAMETER(x) module_param(x, charp, 0)
+-
+-   // the following macro causes problems when used in the same module
+-   // as module_param(); undef it so we don't accidentally mix the two
+ #  undef  MODULE_PARM
+ #endif
+ 
+@@ -1189,9 +1205,9 @@
+ #define NV_ALLOC_MAPPING_CONTIG(flags)  ((flags) & NV_ALLOC_TYPE_CONTIG)
+ #define NV_ALLOC_MAPPING_GUEST(flags)   ((flags) & NV_ALLOC_TYPE_GUEST)
+ 
+-static inline U032 nv_alloc_init_flags(int cached, int agp, int contig)
++static inline NvU32 nv_alloc_init_flags(int cached, int agp, int contig)
+ {
+-    U032 flags = NV_ALLOC_ENC_MAPPING(cached);
++    NvU32 flags = NV_ALLOC_ENC_MAPPING(cached);
+     if (agp)    flags |= NV_ALLOC_TYPE_AGP;
+     else        flags |= NV_ALLOC_TYPE_PCI;
+     if (contig && !agp) flags |= NV_ALLOC_TYPE_CONTIG;
+@@ -1277,7 +1293,7 @@
+     struct pm_dev *apm_nv_dev;
+ #endif
+ 
+-    U032 device_num;
++    NvU32 device_num;
+     struct nv_linux_state_s *next;
+ } nv_linux_state_t;
+ 
+@@ -1317,18 +1333,21 @@
+  * data structure..
+  */
+ 
+-#define NV_EVENT_FIFO_SIZE 6
++typedef struct nvidia_event
++{
++    struct nvidia_event *next;
++    nv_event_t event;
++} nvidia_event_t;
+ 
+ typedef struct
+ {
+     nv_stack_t *sp;
+     struct semaphore sp_lock;
+     void *nvptr;
+-    U032 num_events;
+-    U032 put, get;
++    nvidia_event_t *event_head;
++    nvidia_event_t *event_tail;
+     nv_spinlock_t fp_lock;
+     wait_queue_head_t waitqueue;
+-    nv_event_t *event_fifo;     // fifo for storing events
+ } nv_file_private_t;
+ 
+ #define NV_SET_FILE_PRIVATE(filep,data) ((filep)->private_data = (data))
+diff -ur a//usr/src/nv/nv-memdbg.h b//usr/src/nv/nv-memdbg.h
+--- a//usr/src/nv/nv-memdbg.h	2009-12-19 05:43:58.000000000 +0300
++++ b//usr/src/nv/nv-memdbg.h	2010-03-03 02:17:06.000000000 +0300
+@@ -20,9 +20,9 @@
+ 
+ struct mem_track_t {
+     void *addr;
+-    U032 size;
+-    U008 *file;
+-    U032 line;
++    NvU32 size;
++    NvU8 *file;
++    NvU32 line;
+     struct mem_track_t *next;
+ };
+ 
+@@ -31,9 +31,9 @@
+ nv_add_mem(
+     struct mem_track_t **mem_list,
+     void *addr,
+-    U032 size,
+-    U008 *file,
+-    U032 line
++    NvU32 size,
++    NvU8 *file,
++    NvU32 line
+ )
+ {
+     struct mem_track_t *tmp;
+@@ -55,9 +55,9 @@
+ nv_free_mem(
+     struct mem_track_t **mem_list,
+     void *addr,
+-    U032 size,
+-    U008 *file,
+-    U032 line
++    NvU32 size,
++    NvU8 *file,
++    NvU32 line
+ )
+ {
+     struct mem_track_t *tmp, *prev;
+@@ -92,13 +92,13 @@
+ 
+ static inline void
+ nv_list_mem(
+-    const U008 *type,
++    const NvU8 *type,
+     struct mem_track_t *mem_list
+ )
+ {
+     struct mem_track_t *tmp;
+     BOOL print_summary = FALSE;
+-    U032 count = 0;
++    NvU32 count = 0;
+ 
+     if (mem_list != NULL)
+     {
+diff -ur a//usr/src/nv/nv-misc.h b//usr/src/nv/nv-misc.h
+--- a//usr/src/nv/nv-misc.h	2009-12-19 05:43:58.000000000 +0300
++++ b//usr/src/nv/nv-misc.h	2010-03-03 02:17:06.000000000 +0300
+@@ -15,7 +15,7 @@
+ #include "rmretval.h"
+ 
+ #ifndef BOOL
+-#define BOOL            S032
++#define BOOL            NvS32
+ #endif
+ #ifndef TRUE
+ #define TRUE            1L
+diff -ur a//usr/src/nv/nv-xen.h b//usr/src/nv/nv-xen.h
+--- a//usr/src/nv/nv-xen.h	2009-12-19 05:44:00.000000000 +0300
++++ b//usr/src/nv/nv-xen.h	2010-03-03 02:17:06.000000000 +0300
+@@ -11,9 +11,9 @@
+ RM_STATUS NV_API_CALL
+ nv_alias_pages(
+     nv_state_t *nv,
+-    U032 page_cnt,
+-    U032 contiguous,
+-    U032 cache_type,
++    NvU32 page_cnt,
++    NvU32 contiguous,
++    NvU32 cache_type,
+     NvU64 guest_id,
+     NvU64 *pte_array,
+     void **priv_data
+@@ -21,7 +21,7 @@
+ {
+     nv_alloc_t *at;
+     nv_linux_state_t *nvl = NV_GET_NVL_FROM_NV_STATE(nv);
+-    U032 i=0;
++    NvU32 i=0;
+     nv_pte_t *page_ptr = NULL;
+     
+     page_cnt = RM_PAGES_TO_OS_PAGES(page_cnt);
+@@ -110,12 +110,12 @@
+  */
+ static unsigned long
+ nv_map_guest_pages(nv_alloc_t *at,
+-                   U032 address,
+-                   U032 page_count,
+-                   U032 page_idx)
++                   NvU32 address,
++                   NvU32 page_count,
++                   NvU32 page_idx)
+ {
+     unsigned long virt_addr;
+-    U032 i;
++    NvU32 i;
+ 
+     NV_IOREMAP(virt_addr, address,
+                page_count * PAGE_SIZE);
+@@ -168,7 +168,7 @@
+                   unsigned int *user_pfn_list)
+ {
+     nv_alloc_t *at;
+-    U032 i;
++    NvU32 i;
+     unsigned int *pfn_list = NULL;
+     nv_linux_state_t *nvl = NV_GET_NVL_FROM_NV_STATE(nv);
+     RM_STATUS status = RM_OK;
+diff -ur a//usr/src/nv/os-agp.h b//usr/src/nv/os-agp.h
+--- a//usr/src/nv/os-agp.h	2009-12-19 05:43:56.000000000 +0300
++++ b//usr/src/nv/os-agp.h	2010-03-03 02:17:06.000000000 +0300
+@@ -15,9 +15,9 @@
+ #include "nv-misc.h"
+ #include "nv-linux.h"
+ 
+-RM_STATUS  KernInitAGP        (nv_stack_t *, nv_state_t *, void **, U032 *);
++RM_STATUS  KernInitAGP        (nv_stack_t *, nv_state_t *, void **, NvU32 *);
+ RM_STATUS  KernTeardownAGP    (nv_stack_t *, nv_state_t *);
+-RM_STATUS  KernAllocAGPPages  (nv_stack_t *, nv_state_t *, U032, void **, U032 *);
++RM_STATUS  KernAllocAGPPages  (nv_stack_t *, nv_state_t *, NvU32, void **, NvU32 *);
+ RM_STATUS  KernFreeAGPPages   (nv_stack_t *, nv_state_t *, void *);
+ RM_STATUS  KernLoadAGPPages   (nv_state_t *, nv_alloc_t *, void *);
+ 
+diff -ur a//usr/src/nv/os-interface.h b//usr/src/nv/os-interface.h
+--- a//usr/src/nv/os-interface.h	2009-12-19 05:43:57.000000000 +0300
++++ b//usr/src/nv/os-interface.h	2010-03-03 02:17:06.000000000 +0300
+@@ -58,50 +58,50 @@
+  * ---------------------------------------------------------------------------
+  */
+ 
+-U032        NV_API_CALL  os_get_page_size            (void);
++NvU32       NV_API_CALL  os_get_page_size            (void);
+ NvU64       NV_API_CALL  os_get_page_mask            (void);
+ NvU64       NV_API_CALL  os_get_system_memory_size   (void);
+-RM_STATUS   NV_API_CALL  os_alloc_mem                (void **, U032);
++RM_STATUS   NV_API_CALL  os_alloc_mem                (void **, NvU32);
+ void        NV_API_CALL  os_free_mem                 (void *);
+-RM_STATUS   NV_API_CALL  os_get_current_time         (U032 *, U032 *);
+-RM_STATUS   NV_API_CALL  os_delay                    (U032);
+-RM_STATUS   NV_API_CALL  os_delay_us                 (U032);
+-U032        NV_API_CALL  os_get_cpu_frequency        (void);
+-U032        NV_API_CALL  os_get_current_process      (void);
++RM_STATUS   NV_API_CALL  os_get_current_time         (NvU32 *, NvU32 *);
++RM_STATUS   NV_API_CALL  os_delay                    (NvU32);
++RM_STATUS   NV_API_CALL  os_delay_us                 (NvU32);
++NvU32       NV_API_CALL  os_get_cpu_frequency        (void);
++NvU32       NV_API_CALL  os_get_current_process      (void);
+ RM_STATUS   NV_API_CALL  os_get_current_thread       (NvU64 *);
+ char*       NV_API_CALL  os_string_copy              (char *, const char *);
+-RM_STATUS   NV_API_CALL  os_strncpy_from_user        (char *, const char *, U032);
+-U032        NV_API_CALL  os_string_length            (const char *);
+-U008*       NV_API_CALL  os_mem_copy                 (U008 *, const U008 *, U032);
+-RM_STATUS   NV_API_CALL  os_memcpy_from_user         (void *, const void *, U032);
+-RM_STATUS   NV_API_CALL  os_memcpy_to_user           (void *, const void *, U032);
+-void*       NV_API_CALL  os_mem_set                  (void *, U008, U032);
+-S032        NV_API_CALL  os_mem_cmp                  (const U008 *, const U008 *, U032);
+-void*       NV_API_CALL  os_pci_init_handle          (U008, U008, U008, U016 *, U016 *);
+-U008        NV_API_CALL  os_pci_read_byte            (void *, U008);
+-U016        NV_API_CALL  os_pci_read_word            (void *, U008);
+-U032        NV_API_CALL  os_pci_read_dword           (void *, U008);
+-void        NV_API_CALL  os_pci_write_byte           (void *, U008, U008);
+-void        NV_API_CALL  os_pci_write_word           (void *, U008, U016);
+-void        NV_API_CALL  os_pci_write_dword          (void *, U008, U032);
+-void*       NV_API_CALL  os_map_kernel_space         (NvU64, NvU64, U032);
++RM_STATUS   NV_API_CALL  os_strncpy_from_user        (char *, const char *, NvU32);
++NvU32       NV_API_CALL  os_string_length            (const char *);
++NvU8*       NV_API_CALL  os_mem_copy                 (NvU8 *, const NvU8 *, NvU32);
++RM_STATUS   NV_API_CALL  os_memcpy_from_user         (void *, const void *, NvU32);
++RM_STATUS   NV_API_CALL  os_memcpy_to_user           (void *, const void *, NvU32);
++void*       NV_API_CALL  os_mem_set                  (void *, NvU8, NvU32);
++NvS32       NV_API_CALL  os_mem_cmp                  (const NvU8 *, const NvU8 *, NvU32);
++void*       NV_API_CALL  os_pci_init_handle          (NvU8, NvU8, NvU8, NvU16 *, NvU16 *);
++NvU8        NV_API_CALL  os_pci_read_byte            (void *, NvU8);
++NvU16       NV_API_CALL  os_pci_read_word            (void *, NvU8);
++NvU32       NV_API_CALL  os_pci_read_dword           (void *, NvU8);
++void        NV_API_CALL  os_pci_write_byte           (void *, NvU8, NvU8);
++void        NV_API_CALL  os_pci_write_word           (void *, NvU8, NvU16);
++void        NV_API_CALL  os_pci_write_dword          (void *, NvU8, NvU32);
++void*       NV_API_CALL  os_map_kernel_space         (NvU64, NvU64, NvU32);
+ void        NV_API_CALL  os_unmap_kernel_space       (void *, NvU64);
+ RM_STATUS   NV_API_CALL  os_flush_cpu_cache          (void);
+ void        NV_API_CALL  os_flush_cpu_write_combine_buffer(void);
+-RM_STATUS   NV_API_CALL  os_set_mem_range            (NvU64, NvU64, U032);
++RM_STATUS   NV_API_CALL  os_set_mem_range            (NvU64, NvU64, NvU32);
+ RM_STATUS   NV_API_CALL  os_unset_mem_range          (NvU64, NvU64);
+-BOOL        NV_API_CALL  os_pci_device_present       (U016, U016);
+-U008        NV_API_CALL  os_io_read_byte             (U032);
+-U016        NV_API_CALL  os_io_read_word             (U032);
+-U032        NV_API_CALL  os_io_read_dword            (U032);
+-void        NV_API_CALL  os_io_write_byte            (U032, U008);
+-void        NV_API_CALL  os_io_write_word            (U032, U016);
+-void        NV_API_CALL  os_io_write_dword           (U032, U032);
++BOOL        NV_API_CALL  os_pci_device_present       (NvU16, NvU16);
++NvU8        NV_API_CALL  os_io_read_byte             (NvU32);
++NvU16       NV_API_CALL  os_io_read_word             (NvU32);
++NvU32       NV_API_CALL  os_io_read_dword            (NvU32);
++void        NV_API_CALL  os_io_write_byte            (NvU32, NvU8);
++void        NV_API_CALL  os_io_write_word            (NvU32, NvU16);
++void        NV_API_CALL  os_io_write_dword           (NvU32, NvU32);
+ BOOL        NV_API_CALL  os_is_administrator         (PHWINFO);
+ void        NV_API_CALL  os_dbg_init                 (void);
+ void        NV_API_CALL  os_dbg_breakpoint           (void);
+-void        NV_API_CALL  os_dbg_set_level            (U032);
+-U032        NV_API_CALL  os_get_cpu_count            (void);
++void        NV_API_CALL  os_dbg_set_level            (NvU32);
++NvU32       NV_API_CALL  os_get_cpu_count            (void);
+ RM_STATUS   NV_API_CALL  os_raise_smp_barrier        (void);
+ RM_STATUS   NV_API_CALL  os_clear_smp_barrier        (void);
+ RM_STATUS   NV_API_CALL  os_disable_console_access   (void);
+@@ -118,8 +118,8 @@
+ void        NV_API_CALL  os_release_spinlock         (void *, NvU64);
+ RM_STATUS   NV_API_CALL  os_get_address_space_info   (NvU64 *, NvU64 *, NvU64 *, NvU64 *);
+ 
+-void        NV_API_CALL  os_register_compatible_ioctl    (U032, U032);
+-void        NV_API_CALL  os_unregister_compatible_ioctl  (U032, U032);
++void        NV_API_CALL  os_register_compatible_ioctl    (NvU32, NvU32);
++void        NV_API_CALL  os_unregister_compatible_ioctl  (NvU32, NvU32);
+ 
+ /* BOOL os_pat_supported(void) 
+  * report to core resman whether pat is supported for marking cache attributes
+@@ -164,8 +164,8 @@
+ 
+ 
+ void NV_API_CALL  out_string(const char *str);
+-int  NV_API_CALL  nv_printf(U032 debuglevel, const char *printf_format, ...);
+-void NV_API_CALL  nv_prints(U032 debuglevel, const char *string);
++int  NV_API_CALL  nv_printf(NvU32 debuglevel, const char *printf_format, ...);
++void NV_API_CALL  nv_prints(NvU32 debuglevel, const char *string);
+ int  NV_API_CALL  nv_snprintf(char *buf, unsigned int size, const char *fmt, ...);
+ void NV_API_CALL  nv_os_log(int log_level, const char *fmt, void *ap);
+ 
+diff -ur a//usr/src/nv/rmil.h b//usr/src/nv/rmil.h
+--- a//usr/src/nv/rmil.h	2009-12-19 05:43:59.000000000 +0300
++++ b//usr/src/nv/rmil.h	2010-03-03 02:17:06.000000000 +0300
+@@ -12,17 +12,17 @@
+ #ifndef _RMIL_H_
+ #define _RMIL_H_
+ 
+-int        NV_API_CALL  rm_gvi_isr                  (nv_stack_t *, nv_state_t *, U032 *);
++int        NV_API_CALL  rm_gvi_isr                  (nv_stack_t *, nv_state_t *, NvU32 *);
+ void       NV_API_CALL  rm_gvi_bh                   (nv_stack_t *, nv_state_t *);
+ RM_STATUS  NV_API_CALL  rm_gvi_attach_device        (nv_stack_t *, nv_state_t *);
+ RM_STATUS  NV_API_CALL  rm_gvi_detach_device        (nv_stack_t *, nv_state_t *);
+ BOOL       NV_API_CALL  rm_gvi_init_private_state   (nv_stack_t *, nv_state_t *);
+ BOOL       NV_API_CALL  rm_init_gvi_device          (nv_stack_t *, nv_state_t *);
+-U032       NV_API_CALL  rm_shutdown_gvi_device      (nv_stack_t *, nv_state_t *);
+-U032       NV_API_CALL  rm_gvi_suspend              (nv_stack_t *, nv_state_t *);
+-U032       NV_API_CALL  rm_gvi_resume               (nv_stack_t *, nv_state_t *);
++NvU32      NV_API_CALL  rm_shutdown_gvi_device      (nv_stack_t *, nv_state_t *);
++NvU32      NV_API_CALL  rm_gvi_suspend              (nv_stack_t *, nv_state_t *);
++NvU32      NV_API_CALL  rm_gvi_resume               (nv_stack_t *, nv_state_t *);
+ BOOL       NV_API_CALL  rm_gvi_free_private_state   (nv_stack_t *, nv_state_t *);
+-RM_STATUS  NV_API_CALL  rm_gvi_get_device_name      (nv_stack_t *, nv_state_t *, U032, U032, U008 *);
+-RM_STATUS  NV_API_CALL  rm_gvi_get_firmware_version (nv_stack_t *, nv_state_t *, U032 *, U032 *, U032 *);
++RM_STATUS  NV_API_CALL  rm_gvi_get_device_name      (nv_stack_t *, nv_state_t *, NvU32, NvU32, NvU8 *);
++RM_STATUS  NV_API_CALL  rm_gvi_get_firmware_version (nv_stack_t *, nv_state_t *, NvU32 *, NvU32 *, NvU32 *);
+ 
+ #endif // _RMIL_H_
+diff -ur a//usr/src/nv/rmretval.h b//usr/src/nv/rmretval.h
+--- a//usr/src/nv/rmretval.h	2009-12-19 05:43:59.000000000 +0300
++++ b//usr/src/nv/rmretval.h	2010-03-03 02:17:06.000000000 +0300
+@@ -94,10 +94,11 @@
+ #define RM_ERR_TIMEOUT_RETRY            0x00000042
+ #define RM_ERR_NOT_READY                0x00000043
+ #define RM_ERR_BROKEN_FB                0x00000044
+-#define RM_ERR_GPU_IS_LOST              0x00000044
+-#define RM_ERR_GPU_IN_FULLCHIP_RESET    0x00000045
+-#define RM_ERR_REJECTED_VBIOS           0x00000046
+-#define RM_ERR_NOT_ENOUGH_POWER         0x00000047
++#define RM_ERR_GPU_IS_LOST              0x00000045
++#define RM_ERR_GPU_IN_FULLCHIP_RESET    0x00000046
++#define RM_ERR_REJECTED_VBIOS           0x00000047
++#define RM_ERR_NOT_ENOUGH_POWER         0x00000048
++#define RM_ERR_I2C_SPEED_TOO_HIGH       0X00000049
+ 
+ // Warnings:
+ #define RM_WARN_NULL_OBJECT             0x00000100
