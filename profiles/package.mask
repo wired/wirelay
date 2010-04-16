@@ -1,3 +1,7 @@
+# Alex Alexander <wired@gentoo.org> (16 Apr 2010)
+# this version fails (sound and xanim issues) 
+~media-video/mplayer-1.0_rc4_p20100328
+
 # Alex Alexander <wired@gentoo.org> (25 Apr 2009)
 # masked nvidia-drivers 195.36.0{3,8} - WARNING - danger of overheating
 # nVidia reported that using these drivers might fry your card!
