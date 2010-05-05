@@ -1,0 +1,83 @@
+diff -u -r tmux-1.2-orig/cmd-set-option.c tmux-1.2/cmd-set-option.c
+--- tmux-1.2-orig/cmd-set-option.c	2010-05-05 03:05:57.127477714 +0300
++++ tmux-1.2/cmd-set-option.c	2010-05-05 03:31:21.932536445 +0300
+@@ -164,6 +164,9 @@
+ 	{ "window-status-current-fg", SET_OPTION_COLOUR, 0, 0, NULL },
+ 	{ "window-status-current-format", SET_OPTION_STRING, 0, 0, NULL },
+ 	{ "window-status-fg", SET_OPTION_COLOUR, 0, 0, NULL },
++	{ "window-status-flagged-attr", SET_OPTION_ATTRIBUTES, 0, 0, NULL },
++	{ "window-status-flagged-bg", SET_OPTION_COLOUR, 0, 0, NULL },
++	{ "window-status-flagged-fg", SET_OPTION_COLOUR, 0, 0, NULL },
+ 	{ "window-status-format", SET_OPTION_STRING, 0, 0, NULL },
+ 	{ "word-separators", SET_OPTION_STRING, 0, 0, NULL },
+ 	{ "xterm-keys", SET_OPTION_FLAG, 0, 0, NULL },
+diff -u -r tmux-1.2-orig/examples/tmux.vim tmux-1.2/examples/tmux.vim
+--- tmux-1.2-orig/examples/tmux.vim	2010-05-05 03:05:57.128477872 +0300
++++ tmux-1.2/examples/tmux.vim	2010-05-05 03:43:18.400542048 +0300
+@@ -71,7 +71,8 @@
+ syn keyword tmuxOptsSetw window-status-current-attr window-status-current-bg
+ syn keyword tmuxOptsSetw window-status-current-fg mode-mouse synchronize-panes
+ syn keyword tmuxOptsSetw window-status-format window-status-current-format
+-syn keyword tmuxOptsSetw word-separators
++syn keyword tmuxOptsSetw word-separators window-status-flagged-attr
++syn keyword tmuxOptsSetw window-status-flagged-fg window-status-flagged-bg
+ 
+ syn keyword tmuxTodo FIXME NOTE TODO XXX contained
+ 
+diff -u -r tmux-1.2-orig/status.c tmux-1.2/status.c
+--- tmux-1.2-orig/status.c	2010-05-05 03:05:57.128477872 +0300
++++ tmux-1.2/status.c	2010-05-05 03:29:52.124548170 +0300
+@@ -620,8 +620,19 @@
+ 
+ 	if (session_alert_has(s, wl, WINDOW_ACTIVITY) ||
+ 	    session_alert_has(s, wl, WINDOW_BELL) ||
+-	    session_alert_has(s, wl, WINDOW_CONTENT))
+-		gc->attr ^= GRID_ATTR_REVERSE;
++	    session_alert_has(s, wl, WINDOW_CONTENT)) {
++		fg = options_get_number(oo, "window-status-flagged-fg");
++		if (fg != 8)
++			colour_set_fg(gc, fg);
++		bg = options_get_number(oo, "window-status-flagged-bg");
++		if (bg != 8)
++			colour_set_bg(gc, bg);
++		attr = options_get_number(oo, "window-status-flagged-attr");
++		if (attr != 0)
++			gc->attr = attr;
++		if (fg == 8 && bg == 8 && attr == 0 )
++			gc->attr ^= GRID_ATTR_REVERSE;
++	}
+ 
+ 	text = status_replace(c, wl, fmt, t, 1);
+ 	return (text);
+diff -u -r tmux-1.2-orig/tmux.1 tmux-1.2/tmux.1
+--- tmux-1.2-orig/tmux.1	2010-05-05 03:05:57.129477629 +0300
++++ tmux-1.2/tmux.1	2010-05-05 03:34:23.822545034 +0300
+@@ -2028,6 +2028,15 @@
+ The default is
+ .Ql #I:#W#F .
+ .Pp
++.It Ic window-status-flagged-attr Ar attributes
++Set status line attributes for flagged windows.
++.Pp
++.It Ic window-status-flagged-bg Ar colour
++Set status line background colour for flagged windows.
++.Pp
++.It Ic window-status-flagged-fg Ar colour
++Set status line foreground colour for flagged windows.
++.Pp
+ .It Ic window-status-current-attr Ar attributes
+ Set status line attributes for the currently active window.
+ .Pp
+diff -u -r tmux-1.2-orig/tmux.c tmux-1.2/tmux.c
+--- tmux-1.2-orig/tmux.c	2010-05-05 03:05:57.127477714 +0300
++++ tmux-1.2/tmux.c	2010-05-05 03:32:22.250503647 +0300
+@@ -419,6 +419,9 @@
+ 	options_set_number(wo, "window-status-current-bg", 8);
+ 	options_set_number(wo, "window-status-current-fg", 8);
+ 	options_set_number(wo, "window-status-fg", 8);
++	options_set_number(wo, "window-status-flagged-attr", 0);
++	options_set_number(wo, "window-status-flagged-bg", 8);
++	options_set_number(wo, "window-status-flagged-fg", 8);
+ 	options_set_string(wo, "window-status-format", "#I:#W#F");
+ 	options_set_string(wo, "window-status-current-format", "#I:#W#F");
+ 	options_set_string(wo, "word-separators", " -_@");
