@@ -20,7 +20,7 @@ RDEPEND="${DEPEND}
 			app-editors/gvim
 			app-editors/vim ) )"
 
-PATCHES=( "${FILESDIR}/${PN}-flagged-colors.patch" )
+PATCHES=( "${FILESDIR}/${PN}-alert-colors.patch" )
 
 src_compile() {
 	# The configure script isn't created by GNU autotools.
