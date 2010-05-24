@@ -12,7 +12,7 @@ SRC_URI="http://gnome-look.org/CONTENT/content-files/121881-${MY_P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~x86"
 IUSE=""
 
 RDEPEND="x11-libs/gtk+:2"
