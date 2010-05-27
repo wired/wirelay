@@ -6,14 +6,14 @@ EAPI="2"
 
 MY_P=${P/gtk-engines-}
 
-DESCRIPTION="A heavily modified version of the beautiful Aurora engine "
+DESCRIPTION="A heavily modified version of the beautiful Aurora engine"
 HOMEPAGE="http://gnome-look.org/content/show.php/Equinox+GTK+Engine?content=121881"
 SRC_URI="http://gnome-look.org/CONTENT/content-files/121881-${MY_P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE=""
+IUSE="+animation themes"
 
 RDEPEND="x11-libs/gtk+:2"
 DEPEND="${RDEPEND}
@@ -21,19 +21,32 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}"/${MY_P}
 
 src_unpack() {
-	echo tar xjpf "${DISTDIR}"/${A} equinox-gtk-engine.tar.gz
-	tar xjpf "${DISTDIR}"/${A} equinox-gtk-engine.tar.gz || die
-
+	unpack "${A}"
+	# extract engine
 	echo tar xzpf "${WORKDIR}"/equinox-gtk-engine.tar.gz
 	tar xzpf "${WORKDIR}"/equinox-gtk-engine.tar.gz || die
 	cd "${S}"
+
+	if use themes; then # extract themes
+		mkdir themes
+		cd themes
+		echo tar xzpf "${WORKDIR}"/equinox-themes.tar.gz
+		tar xzpf "${WORKDIR}"/equinox-themes.tar.gz || die
+	fi
 }
 
 src_configure() {
-	econf --enable-animation
+	econf $(use_enable animation) || die "econf failed"
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
+
+	if use themes; then
+		dodir /usr/share/themes/
+		insinto /usr/share/themes/
+		doins -r themes/* || die "themes installation failed"
+	fi
+
 	dodoc AUTHORS ChangeLog || die "dodoc failed"
 }
