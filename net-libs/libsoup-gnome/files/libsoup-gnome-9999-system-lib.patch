@@ -121,11 +121,10 @@ index 24e0390..3f375d4 100644
  	PKG_CHECK_MODULES(LIBPROXY, libproxy-1.0, :, [AC_MSG_ERROR(dnl
  [Could not find libproxy:
  
-diff --git a/libsoup/Makefile.am b/libsoup/Makefile.am
-index c25b534..396c5f6 100644
---- a/libsoup/Makefile.am
-+++ b/libsoup/Makefile.am
-@@ -3,18 +3,16 @@
+diff -ur a/libsoup/Makefile.am b/libsoup/Makefile.am
+--- a/libsoup/Makefile.am	2010-05-27 12:30:32.469812840 +0300
++++ b/libsoup/Makefile.am	2010-05-27 12:33:19.763821602 +0300
+@@ -3,18 +3,17 @@
  if OS_WIN32
  LIBWS2_32 = -lws2_32
  endif
@@ -133,6 +132,7 @@ index c25b534..396c5f6 100644
 -INCLUDES = 				\
 +INCLUDES =
 +lib_LTLIBRARIES = 
++CLEANFILES = 
 +if BUILD_LIBSOUP
 +INCLUDES += 				\
  	-DG_LOG_DOMAIN=\"libsoup\" 	\
@@ -148,7 +148,7 @@ index c25b534..396c5f6 100644
  	$(LIBGCRYPT_CFLAGS)		\
  	$(LIBGNUTLS_CFLAGS)
  
-@@ -90,7 +88,7 @@ libsoupinclude_HEADERS =	\
+@@ -91,7 +90,7 @@
  	$(soup_headers)		\
  	soup-enum-types.h
  
@@ -157,7 +157,7 @@ index c25b534..396c5f6 100644
  
  libsoup_2_4_la_LDFLAGS =	\
  	-version-info $(SOUP_CURRENT):$(SOUP_REVISION):$(SOUP_AGE) -no-undefined
-@@ -163,9 +161,16 @@ libsoup_2_4_la_SOURCES =		\
+@@ -170,9 +169,16 @@
  	soup-uri.c			\
  	soup-value-utils.c		\
  	soup-xmlrpc.c
@@ -174,7 +174,7 @@ index c25b534..396c5f6 100644
  libsoupgnomeincludedir = $(includedir)/libsoup-gnome-2.4/libsoup
  
  libsoupgnomeinclude_HEADERS =	\
-@@ -174,17 +179,23 @@ libsoupgnomeinclude_HEADERS =	\
+@@ -181,17 +187,23 @@
  	soup-gnome-features.h
  
  lib_LTLIBRARIES += libsoup-gnome-2.4.la
@@ -203,6 +203,3 @@ index c25b534..396c5f6 100644
  libsoup_gnome_2_4_la_SOURCES =		\
  	soup-cookie-jar-sqlite.c	\
  	soup-gnome-features.c		\
--- 
-1.6.5.rc1
-
