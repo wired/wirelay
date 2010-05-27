@@ -21,7 +21,7 @@ DEPEND="${RDEPEND}
 S="${WORKDIR}"/${MY_P}
 
 src_unpack() {
-	unpack "${A}"
+	unpack ${A}
 	# extract engine
 	echo tar xzpf "${WORKDIR}"/equinox-gtk-engine.tar.gz
 	tar xzpf "${WORKDIR}"/equinox-gtk-engine.tar.gz || die
