@@ -20,7 +20,7 @@ DEPEND="
 	>=dev-lang/lua-5.1
 	dev-util/gperf
 	>=net-libs/webkit-gtk-1.1.15
-	x11-libs/gtk+
+	x11-libs/gtk+:2
 "
 
 RDEPEND="
