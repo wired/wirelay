@@ -9,10 +9,15 @@ if [[ ${PV} == *9999* ]]; then
 	EGIT_REPO_URI=${EGIT_REPO_URI:-"git://github.com/mason-larobina/luakit.git"}
 	KEYWORDS=""
 	SRC_URI=""
+	IUSE="develop-branch"
+	use develop-branch &&
+		EGIT_BRANCH="develop" &&
+		EGIT_COMMIT="develop"
 else
 	inherit base
 	KEYWORDS="~amd64 ~x86"
 	SRC_URI="http://github.com/mason-larobina/${PN}/tarball/${PV} -> ${P}.tar.gz"
+	IUSE=""
 fi
 
 
@@ -21,7 +26,7 @@ HOMEPAGE="http://www.luakit.org"
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE=""
+IUSE+=" "
 
 DEPEND="
 	>=dev-lang/lua-5.1
