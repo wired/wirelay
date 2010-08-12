@@ -9,12 +9,10 @@ IUSE=""
 if [[ ${PV} == *9999* ]]; then
 	inherit git
 	EGIT_REPO_URI=${EGIT_REPO_URI:-"git://github.com/mason-larobina/luakit.git"}
+	EGIT_BRANCH="develop"
+	EGIT_COMMIT="develop"
 	KEYWORDS=""
 	SRC_URI=""
-	IUSE="develop-branch"
-	use develop-branch &&
-		EGIT_BRANCH="develop" &&
-		EGIT_COMMIT="develop"
 else
 	inherit base
 	KEYWORDS="~amd64 ~x86"

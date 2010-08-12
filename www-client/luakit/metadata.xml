@@ -6,8 +6,5 @@
 		<email>wired@gentoo.org</email>
 		<name>Alex Alexander</name>
 	</maintainer>
-	<use>
-		<flag name="develop-branch">Use the "develop" git branch</flag>
-	</use>
 </pkgmetadata>
 
