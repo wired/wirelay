@@ -1,8 +1,10 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 EAPI=3
+
+IUSE=""
 
 if [[ ${PV} == *9999* ]]; then
 	inherit git
@@ -17,29 +19,26 @@ else
 	inherit base
 	KEYWORDS="~amd64 ~x86"
 	SRC_URI="http://github.com/mason-larobina/${PN}/tarball/${PV} -> ${P}.tar.gz"
-	IUSE=""
 fi
-
 
 DESCRIPTION="a webkit-gtk based, micro-browser framework in Lua"
 HOMEPAGE="http://www.luakit.org"
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE+=" "
 
-DEPEND="
+RDEPEND="
 	>=dev-lang/lua-5.1
 	dev-libs/glib:2
 	dev-libs/libxdg-basedir
-	dev-util/gperf
 	net-libs/libsoup
 	net-libs/webkit-gtk
 	x11-libs/gtk+:2
 "
 
-RDEPEND="
-	${DEPEND}
+DEPEND="
+	dev-util/gperf
+	${RDEPEND}
 "
 
 src_prepare() {
