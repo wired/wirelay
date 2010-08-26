@@ -1,6 +1,6 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-wm/awesome/awesome-3.4.3.ebuild,v 1.1 2010/01/04 15:38:14 matsuu Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-wm/awesome/awesome-3.4.5.ebuild,v 1.1 2010/05/12 13:47:21 matsuu Exp $
 
 EAPI="2"
 inherit cmake-utils eutils
@@ -12,8 +12,7 @@ SRC_URI="http://awesome.naquadah.org/download/${P}.tar.bz2"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~ppc ~ppc64 ~x86 ~x86-fbsd"
-#IUSE="dbus doc elibc_FreeBSD bash-completion"
-IUSE="dbus doc elibc_FreeBSD"
+IUSE="dbus doc elibc_FreeBSD bash-completion"
 
 RDEPEND=">=dev-lang/lua-5.1[deprecated]
 	dev-libs/libev
@@ -29,7 +28,7 @@ RDEPEND=">=dev-lang/lua-5.1[deprecated]
 	elibc_FreeBSD? ( dev-libs/libexecinfo )"
 
 DEPEND="${RDEPEND}
-	app-text/asciidoc
+	>=app-text/asciidoc-8.4.5
 	app-text/xmlto
 	>=dev-util/cmake-2.6
 	dev-util/gperf
@@ -45,11 +44,11 @@ DEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	app-shells/bash
+	bash-completion? ( app-shells/bash-completion )
 	|| (
 		x11-misc/gxmessage
 		x11-apps/xmessage
 	)"
-#	bash-completion? ( app-shells/bash-completion )
 
 DOCS="AUTHORS BUGS PATCHES README STYLE"
 
@@ -60,8 +59,11 @@ mycmakeargs="-DPREFIX=/usr
 
 src_prepare() {
 	epatch "${FILESDIR}/${PN}-3.4.2-backtrace.patch"
-	epatch "${FILESDIR}/${PN}-3.4-wibox.patch"
-	epatch "${FILESDIR}/${P}-qt-xinerama-fix.patch"
+
+	# kill handling of NET_CURRENT_DESKTOP
+	# temp fix for openoffice bug #109550
+	# doesn't seem to break anything else
+	epatch "${FILESDIR}/${PN}-3.4.3-net-current-desktop-ooo.patch"
 }
 
 src_compile() {
