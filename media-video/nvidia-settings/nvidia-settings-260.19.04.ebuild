@@ -1,14 +1,14 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-video/nvidia-settings/nvidia-settings-190.42.ebuild,v 1.2 2009/11/01 12:11:44 ssuominen Exp $
+# $Header: /var/cvsroot/gentoo-x86/media-video/nvidia-settings/nvidia-settings-256.52.ebuild,v 1.5 2010/09/05 13:44:40 lxnay Exp $
+
+EAPI=2
 
 inherit eutils toolchain-funcs multilib flag-o-matic
 
-MY_P="${PN}-1.0"
-
 DESCRIPTION="NVIDIA Linux X11 Settings Utility"
 HOMEPAGE="http://www.nvidia.com/"
-SRC_URI="ftp://download.nvidia.com/XFree86/${PN}/${P}.tar.gz"
+SRC_URI="ftp://download.nvidia.com/XFree86/${PN}/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -33,31 +33,25 @@ RDEPEND=">=x11-libs/gtk+-2
 	x11-libs/libXt
 	x11-drivers/nvidia-drivers"
 
-S=${WORKDIR}/${MY_P}
-
-src_unpack() {
-	unpack ${A}
-	cd "${S}"
-	epatch "${FILESDIR}"/${PN}-195.22-xf86vidmodeproto.patch
+src_prepare() {
+	sed -i -e "s#prefix = .*#prefix = ${D}/usr#" utils.mk
 }
 
 src_compile() {
 	einfo "Building libXNVCtrl..."
 	cd "${S}/src/libXNVCtrl"
-	make clean || die "Cleaning old libXNVCtrl failed"
+	emake clean || die "Cleaning old libXNVCtrl failed"
 	append-flags -fPIC
 	emake CDEBUGFLAGS="${CFLAGS}" CC="$(tc-getCC)" libXNVCtrl.a || die "Building libXNVCtrl failed!"
 	filter-flags -fPIC
 
-	cd "${S}"
-	einfo "Building nVidia-Settings..."
-	emake  CC="$(tc-getCC)" || die "Failed to build nvidia-settings"
+	#cd "${S}"
+	#einfo "Building nVidia-Settings..."
+	#emake  CC="$(tc-getCC)" STRIP_CMD=/bin/true || die "Failed to build nvidia-settings"
 }
 
 src_install() {
-	# Install the executable
-	exeinto /usr/bin
-	doexe nvidia-settings
+	#emake STRIP_CMD=/bin/true install || die
 
 	# Install libXNVCtrl and headers
 	insinto "/usr/$(get_libdir)"
@@ -66,11 +60,8 @@ src_install() {
 	doins src/libXNVCtrl/{NVCtrl,NVCtrlLib}.h
 
 	# Install icon and .desktop entry
-	doicon "${FILESDIR}/icon/${PN}.png"
-	domenu "${FILESDIR}/icon/${PN}.desktop"
-
-	# Install manpage
-	doman doc/nvidia-settings.1
+	#doicon "${FILESDIR}/icon/${PN}.png"
+	#domenu "${FILESDIR}/icon/${PN}.desktop"
 
 	# Now install documentation
 	dodoc doc/*.txt
