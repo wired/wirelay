@@ -1,3 +1,7 @@
+# Alex Alexander <wired@gentoo.org> (08 Sep 2010)
+# dev version masked
+~net-im/bitlbee-1.3_pre20100806
+
 # Alex Alexander <wired@gentoo.org> (16 Apr 2010)
 # this version fails (sound and xanim issues) 
 ~media-video/mplayer-1.0_rc4_p20100328
