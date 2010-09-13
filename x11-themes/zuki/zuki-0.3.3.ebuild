@@ -7,7 +7,7 @@ EAPI="3"
 inherit base
 
 DESCRIPTION="GTK style is inspired by eGTK by danrabbit"
-HOMEPAGE="http://gnome-look.org/content/show.php/Valium?content=128843"
+HOMEPAGE="http://gnome-look.org/content/show.php/Zuki?content=126043"
 SRC_URI="http://gnome-look.org/CONTENT/content-files/126043-Zuki.zip -> ${P}.zip"
 
 LICENSE="GPL-2"
