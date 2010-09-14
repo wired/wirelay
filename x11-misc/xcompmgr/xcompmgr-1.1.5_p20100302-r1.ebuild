@@ -8,7 +8,7 @@ inherit x-modular autotools
 
 DESCRIPTION="X Compositing manager"
 HOMEPAGE="http://freedesktop.org/Software/xapps"
-SRC_URI="http://dev.gentooexperimental.org/~wired/distfiles/${P}.tar.bz2"
+SRC_URI="http://www.linuxized.com/distfiles/${P}.tar.bz2"
 LICENSE="BSD"
 KEYWORDS="~amd64 ~ppc ~ppc64 ~sparc ~x86"
 IUSE=""
