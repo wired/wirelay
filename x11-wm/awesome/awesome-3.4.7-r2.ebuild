@@ -68,6 +68,8 @@ src_configure() {
 		-DSYSCONFDIR=/etc
 		$(cmake-utils_use_with dbus DBUS)
 		$(cmake-utils_use doc GENERATE_LUADOC)"
+
+	cmake-utils_src_configure
 }
 
 src_compile() {
