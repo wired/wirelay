@@ -20,6 +20,8 @@ RDEPEND="
 	>=dev-lang/lua-5.1[deprecated]
 	dev-libs/libev
 	>=dev-libs/libxdg-basedir-1
+	dev-libs/oocairo
+	dev-libs/oopango
 	media-libs/imlib2[png]
 	x11-libs/cairo[xcb]
 	|| ( >x11-libs/libX11-1.3.5 <=x11-libs/libX11-1.3.5[xcb] )
