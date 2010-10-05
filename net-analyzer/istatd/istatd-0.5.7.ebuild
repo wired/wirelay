@@ -49,6 +49,6 @@ src_install() {
 
 pkg_postinst() {
 	elog
-	elog "Don't forget to edit /etc/istat.conf and change the server access code!"
+	elog "Don't forget to edit /etc/istatd.conf and change the server access code!"
 	elog
 }
