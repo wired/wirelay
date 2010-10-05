@@ -1,0 +1,26 @@
+#!/sbin/runscript
+# Copyright 1999-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License, v2 or
+# later
+# $Header: $
+
+DAEMON=/usr/bin/istatd
+PIDFILE=/var/run/istatd/istatd.pid
+
+depend() {
+	need net
+}
+
+start () {
+	ebegin "Starting istatd"
+	start-stop-daemon --start --quiet \
+		-c istatd:istatd  --exec ${DAEMON} -- --pid=${PIDFILE} ${ISTATD_OPTS}
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping istatd"
+	start-stop-daemon --stop --quiet --pidfile ${PIDFILE}
+	eend $?
+}
+

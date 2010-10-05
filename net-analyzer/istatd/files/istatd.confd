@@ -1,0 +1,2 @@
+#istatd options (see /usr/bin/istat -h)
+ISTATD_OPTS="-d"

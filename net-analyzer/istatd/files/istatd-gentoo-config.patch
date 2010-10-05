@@ -1,0 +1,126 @@
+diff -u -ur istatd-0.5.7-old//configure istatd-0.5.7/configure
+--- istatd-0.5.7-old//configure	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/configure	2010-10-05 14:19:17.602000000 +0300
+@@ -5852,7 +5852,7 @@
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for default location of configuration file" >&5
+ $as_echo_n "checking for default location of configuration file... " >&6; }
+ test x"$prefix" = x"NONE" && prefix="$ac_default_prefix"
+-configpath=`eval echo "$sysconfdir"/istat.conf`
++configpath=`eval echo "$sysconfdir"/istatd.conf`
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $configpath" >&5
+ $as_echo "$configpath" >&6; }
+ 
+diff -u -ur istatd-0.5.7-old//configure.ac istatd-0.5.7/configure.ac
+--- istatd-0.5.7-old//configure.ac	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/configure.ac	2010-10-05 14:19:17.602000000 +0300
+@@ -221,7 +221,7 @@
+ 
+ AC_MSG_CHECKING([for default location of configuration file])
+ test x"$prefix" = x"NONE" && prefix="$ac_default_prefix"
+-configpath=`eval echo "$sysconfdir"/istat.conf`
++configpath=`eval echo "$sysconfdir"/istatd.conf`
+ AC_MSG_RESULT([$configpath])
+ AC_DEFINE_UNQUOTED([CONFIG_FILE_PATH],["${configpath}"],[default location of the configuration file])
+ 
+diff -u -ur istatd-0.5.7-old//daemon.cpp istatd-0.5.7/daemon.cpp
+--- istatd-0.5.7-old//daemon.cpp	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/daemon.cpp	2010-10-05 14:19:17.603000001 +0300
+@@ -128,7 +128,7 @@
+ 		}
+ 		else
+ 		{
+-			cout << "WARNING: istatd set to run as root in istat.conf!  "
++			cout << "WARNING: istatd set to run as root in istatd.conf!  "
+ 					"Not recommended." << endl;
+ 		}
+ 	}
+diff -u -ur istatd-0.5.7-old//DEVELOPERS.txt istatd-0.5.7/DEVELOPERS.txt
+--- istatd-0.5.7-old//DEVELOPERS.txt	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/DEVELOPERS.txt	2010-10-05 14:19:17.604000001 +0300
+@@ -60,7 +60,7 @@
+   
+   $ ./configure --prefix=/opt/istat
+   
+-  If you wish to have the configuration file, istat.conf, stored in /etc,
++  If you wish to have the configuration file, istatd.conf, stored in /etc,
+   then you can specify this location in the configure command:
+   
+   $ ./configure --sysconfdir=/etc
+diff -u -ur istatd-0.5.7-old//resource/istat.conf istatd-0.5.7/resource/istat.conf
+--- istatd-0.5.7-old//resource/istat.conf	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/resource/istat.conf	2010-10-05 14:19:49.945000000 +0300
+@@ -1,15 +1,15 @@
+ #
+-# /etc/istat.conf: Configuration for iStat server
++# /etc/istatd.conf: Configuration for iStat server
+ #
+ 
+ # network_addr           127.0.0.1
+ # network_port           5109
+ server_code              12345
+-# server_user            istat
+-# server_group           istat
+-# server_socket          /tmp/istatd.sock
+-# server_pid             /var/run/istat/istatd.pid
+-# cache_dir              /var/cache/istat
++server_user              istatd
++server_group             istatd
++server_socket            /tmp/istatd.sock
++server_pid               /var/run/istatd/istatd.pid
++cache_dir                /var/cache/istatd
+ 
+ # Note: Only support for one network interface, limited by client.
+ monitor_net              ( eth0 )
+diff -u -ur istatd-0.5.7-old//resource/istat.conf.5 istatd-0.5.7/resource/istat.conf.5
+--- istatd-0.5.7-old//resource/istat.conf.5	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/resource/istat.conf.5	2010-10-05 14:19:21.915000001 +0300
+@@ -1,8 +1,8 @@
+ .Dd 2009-05-17
+-.Dt istat.conf 5
++.Dt istatd.conf 5
+ .Os
+ .Sh NAME
+-.Nm istat.conf
++.Nm istatd.conf
+ .Nd configuration file for istatd
+ 
+ .Sh OPTIONS
+diff -u -ur istatd-0.5.7-old//resource/istatd.1 istatd-0.5.7/resource/istatd.1
+--- istatd-0.5.7-old//resource/istatd.1	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/resource/istatd.1	2010-10-05 14:19:21.915000001 +0300
+@@ -42,9 +42,9 @@
+ .El
+ .Pp
+ .Sh FILES
+-/etc/istat.conf
++/etc/istatd.conf
+ .Pp
+ Configuration for network settings, lock code, running user, devices to monitor and more.
+ .El
+ .Sh SEE ALSO
+-.Xr istat.conf 5
++.Xr istatd.conf 5
+diff -u -ur istatd-0.5.7-old//resource/Makefile.am istatd-0.5.7/resource/Makefile.am
+--- istatd-0.5.7-old//resource/Makefile.am	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/resource/Makefile.am	2010-10-05 14:19:21.915000001 +0300
+@@ -1,4 +1,4 @@
+ 
+-dist_man_MANS = istatd.1 istat.conf.5
++dist_man_MANS = istatd.1 istatd.conf.5
+ 
+-dist_sysconf_DATA = istat.conf
++dist_sysconf_DATA = istatd.conf
+diff -u -ur istatd-0.5.7-old//resource/Makefile.in istatd-0.5.7/resource/Makefile.in
+--- istatd-0.5.7-old//resource/Makefile.in	2010-10-05 14:18:27.831000001 +0300
++++ istatd-0.5.7/resource/Makefile.in	2010-10-05 14:19:21.916000001 +0300
+@@ -178,8 +178,8 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-dist_man_MANS = istatd.1 istat.conf.5
+-dist_sysconf_DATA = istat.conf
++dist_man_MANS = istatd.1 istatd.conf.5
++dist_sysconf_DATA = istatd.conf
+ all: all-am
+ 
+ .SUFFIXES:
