@@ -17,7 +17,7 @@ KEYWORDS=""
 IUSE="dbus doc elibc_FreeBSD bash-completion"
 
 RDEPEND="
-	>=dev-lang/lua-5.1[deprecated]
+	>=dev-lang/lua-5.1
 	dev-libs/libev
 	>=dev-libs/libxdg-basedir-1
 	dev-libs/oocairo
@@ -37,7 +37,7 @@ DEPEND="${RDEPEND}
 	app-text/xmlto
 	dev-util/gperf
 	dev-util/pkgconfig
-	media-gfx/imagemagick[png]
+	|| ( media-gfx/imagemagick[png] media-gfx/graphicsmagick[imagemagick,png] )
 	>=x11-proto/xcb-proto-1.5
 	>=x11-proto/xproto-7.0.15
 	doc? (
@@ -54,6 +54,25 @@ RDEPEND="${RDEPEND}
 		x11-apps/xmessage
 	)"
 
+# bug #321433: Need one of these to for awsetbg.
+# imagemagick provides 'display' and is further down the default list, but
+# listed here for completeness.  'display' however is only usable with
+# x11-apps/xwininfo also present.
+RDEPEND="${RDEPEND}
+	|| (
+	( x11-apps/xwininfo
+		|| ( media-gfx/imagemagick media-gfx/graphicsmagick[imagemagick] )
+	)
+	x11-misc/habak
+	media-gfx/feh
+	x11-misc/hsetroot
+	media-gfx/qiv
+	media-gfx/xv
+	x11-misc/xsri
+	media-gfx/xli
+	x11-apps/xsetroot
+	)"
+
 DOCS="AUTHORS BUGS PATCHES README STYLE"
 
 src_unpack() {
@@ -63,8 +82,8 @@ src_unpack() {
 }
 
 src_configure() {
-	mycmakeargs="-DPREFIX=/usr
-		-DSYSCONFDIR=/etc
+	mycmakeargs="-DPREFIX=${EPREFIX}/usr
+		-DSYSCONFDIR=${EPREFIX}/etc
 		$(cmake-utils_use_with dbus DBUS)
 		$(cmake-utils_use doc GENERATE_LUADOC)"
 
