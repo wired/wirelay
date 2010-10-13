@@ -82,10 +82,12 @@ src_unpack() {
 }
 
 src_configure() {
-	mycmakeargs="-DPREFIX=${EPREFIX}/usr
-		-DSYSCONFDIR=${EPREFIX}/etc
+	mycmakeargs=(
+		-DPREFIX="${EPREFIX}"/usr
+		-DSYSCONFDIR="${EPREFIX}"/etc
 		$(cmake-utils_use_with dbus DBUS)
-		$(cmake-utils_use doc GENERATE_LUADOC)"
+		$(cmake-utils_use doc GENERATE_LUADOC)
+	)
 
 	cmake-utils_src_configure
 }
