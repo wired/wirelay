@@ -4,6 +4,8 @@
 
 EAPI=3
 
+inherit eutils
+
 DESCRIPTION="the All-In-One Solution for Remote Access and Support over the Internet"
 HOMEPAGE="http://www.teamviewer.com"
 SRC_URI="http://www.teamviewer.com/download/${PN}_linux.tar.gz -> ${P}.tar.gz"
@@ -29,12 +31,14 @@ pkg_setup() {
 
 src_install() {
 	insinto /opt/teamviewer/ || die
-	doins teamviewer5/.wine/drive_c/Program\ Files/TeamViewer/Version5/* ||
+	doins teamviewer6/.wine/drive_c/Program\ Files/TeamViewer/Version6/* ||
 		die
 	echo "#!/bin/bash" > teamviewer || die
 	echo "/usr/bin/wine /opt/teamviewer/TeamViewer.exe" >> teamviewer || die
 	insinto /usr/bin || die
 	dobin teamviewer || die
 
-	dodoc teamviewer5/linux_FAQ_{EN,DE}.txt || die
+	dodoc teamviewer6/linux_FAQ_{EN,DE}.txt || die
+
+	make_desktop_entry ${PN} TeamViewer ${PN}
 }
