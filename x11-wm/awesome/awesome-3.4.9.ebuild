@@ -1,8 +1,9 @@
-# Copyright 1999-2010 Gentoo Foundation
+# Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-wm/awesome/awesome-3.4.8.ebuild,v 1.4 2010/10/05 04:24:56 mr_bones_ Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-wm/awesome/awesome-3.4.9.ebuild,v 1.2 2011/01/21 20:21:35 wired Exp $
 
 EAPI="3"
+CMAKE_MIN_VERSION="2.8"
 inherit cmake-utils eutils
 
 DESCRIPTION="A dynamic floating and tiling window manager"
@@ -12,9 +13,9 @@ SRC_URI="http://awesome.naquadah.org/download/${P}.tar.bz2"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~ppc ~ppc64 ~x86 ~x86-fbsd"
-IUSE="dbus doc elibc_FreeBSD bash-completion"
+IUSE="dbus doc elibc_FreeBSD"
 
-RDEPEND=">=dev-lang/lua-5.1[deprecated]
+RDEPEND=">=dev-lang/lua-5.1
 	dev-libs/libev
 	>=dev-libs/libxdg-basedir-1
 	media-libs/imlib2[png]
@@ -37,13 +38,11 @@ DEPEND="${RDEPEND}
 	>=x11-proto/xproto-7.0.15
 	doc? (
 		app-doc/doxygen
-		dev-util/luadoc
+		dev-lua/luadoc
 		media-gfx/graphviz
 	)"
 
 RDEPEND="${RDEPEND}
-	app-shells/bash
-	bash-completion? ( app-shells/bash-completion )
 	|| (
 		x11-misc/gxmessage
 		x11-apps/xmessage
@@ -56,7 +55,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	|| (
 	( x11-apps/xwininfo
-		|| ( media-gfx/imagemagick media-gfx/graphicsmagick[imagemagick] )
+	  || ( media-gfx/imagemagick media-gfx/graphicsmagick[imagemagick] )
 	)
 	x11-misc/habak
 	media-gfx/feh

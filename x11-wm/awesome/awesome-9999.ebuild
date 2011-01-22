@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=""
-IUSE="dbus doc elibc_FreeBSD bash-completion"
+IUSE="dbus doc elibc_FreeBSD"
 
 RDEPEND="
 	>=dev-lang/lua-5.1
@@ -42,13 +42,11 @@ DEPEND="${RDEPEND}
 	>=x11-proto/xproto-7.0.15
 	doc? (
 		app-doc/doxygen
-		dev-util/luadoc
+		dev-lua/luadoc
 		media-gfx/graphviz
 	)"
 
 RDEPEND="${RDEPEND}
-	app-shells/bash
-	bash-completion? ( app-shells/bash-completion )
 	|| (
 		x11-misc/gxmessage
 		x11-apps/xmessage
