@@ -71,6 +71,7 @@ DOCS="AUTHORS BUGS PATCHES README STYLE"
 
 src_prepare() {
 	epatch "${FILESDIR}/${PN}-3.4.2-backtrace.patch"
+	epatch "${FILESDIR}/${PN}-3.4.8-cmake-2.8.4.patch"
 
 	# kill handling of NET_CURRENT_DESKTOP
 	# temp fix for openoffice bug #109550
