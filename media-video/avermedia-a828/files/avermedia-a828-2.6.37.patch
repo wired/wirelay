@@ -1,0 +1,75 @@
+diff -u -ur src-orig//aver/osdep.c src/aver/osdep.c
+--- src-orig//aver/osdep.c	2011-04-05 12:25:38.705956015 +0300
++++ src/aver/osdep.c	2011-04-05 12:28:14.779956016 +0300
+@@ -432,11 +432,11 @@
+ 	if( !tmp ) return -ENOMEM;
+ 	
+ 	if(st_Mutex == type) {
+-		init_MUTEX(tmp);
++		sema_init(tmp, 1);
+ 		*sem = (pSemaphore) tmp;
+ 	}
+ 	else if(st_MutexLocked == type) {
+-		init_MUTEX_LOCKED(tmp);
++		sema_init(tmp, 0);
+ 		*sem = (pSemaphore) tmp;
+ 	}
+ 	else {
+@@ -1067,14 +1067,15 @@
+ 	kfree(kref);
+ }
+ 
++static DEFINE_MUTEX(dvbdev_mutex);
+ void SysLockKernel()
+ {
+-	lock_kernel();
++	mutex_lock(&dvbdev_mutex);
+ }
+ 
+ void SysUnlockKernel()
+ {
+-	unlock_kernel();
++	mutex_unlock(&dvbdev_mutex);
+ }
+ 
+ unsigned long SysCopyToUser(void *to, const void *from, unsigned long n)
+diff -u -ur src-orig//aver/osdep_th2.c src/aver/osdep_th2.c
+--- src-orig//aver/osdep_th2.c	2011-04-05 12:25:38.705956015 +0300
++++ src/aver/osdep_th2.c	2011-04-05 12:28:14.785956016 +0300
+@@ -78,6 +78,7 @@
+ #include <linux/smp_lock.h>
+ #include <linux/sched.h> 
+ #include "osdep_th2.h"
++#include "osdep.h"
+ 
+ 
+ int SysKernelThread(void (*func)(void *),void *thObj)
+@@ -87,7 +88,7 @@
+ 
+ int SysSetThreadName(const char *name) 
+ {
+-        lock_kernel();
++	SysLockKernel();
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2,5,61)
+         daemonize();
+         sigfillset(&current->blocked);
+@@ -97,7 +98,7 @@
+         allow_signal(SIGTERM);
+ #endif
+         siginitsetinv(&current->blocked, sigmask(SIGKILL)|sigmask(SIGINT)|                        sigmask(SIGTERM));
+-        unlock_kernel();
++	SysUnlockKernel();
+ 
+ 	return 0;
+ }
+diff -u -ur src-orig//aver/osdep_v4l2.c src/aver/osdep_v4l2.c
+--- src-orig//aver/osdep_v4l2.c	2011-04-05 12:25:38.705956015 +0300
++++ src/aver/osdep_v4l2.c	2011-04-05 12:28:14.790956016 +0300
+@@ -98,6 +98,7 @@
+ #include "osdep_v4l2.h"
+ 
+ #include "debug.h"
++#define VFL_TYPE_VTX    3
+ 
+ struct videodev_context
+ {

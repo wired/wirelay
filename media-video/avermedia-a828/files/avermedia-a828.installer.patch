@@ -1,0 +1,53 @@
+--- AVERMEDIA-Linux-x64-A828-0.28-beta.sh.old	2011-04-05 12:19:38.794956016 +0300
++++ AVERMEDIA-Linux-x64-A828-0.28-beta.sh	2011-04-05 12:24:07.952956016 +0300
+@@ -2,8 +2,8 @@
+ BASE=`(cd \`dirname $0\`; pwd)`
+ THIS=`basename $0`
+ END_OF_SCRIPT=115
+-MD5SUM=17ef6d18d6dae4332807c192b25c9589
+ TMPDIR=/tmp/avm-install
++[[ -n $1 ]] && TMPDIR=$1
+ 
+ install_package()
+ {
+@@ -84,12 +84,12 @@
+ cd $TMPDIR
+ 
+ # verify MD5 checksum
+-CHECKSUM=`tail -n +${END_OF_SCRIPT} $BASE/$THIS | md5sum /dev/stdin | awk '{print $1}'`
+-echo "Verifying archive integrity..."
+-if [[ "$CHECKSUM" != "$MD5SUM" ]]; then
+-	echo "Archive integrity check failed. This installer is corrupted."
+-	exit
+-fi
++#CHECKSUM=`tail -n +${END_OF_SCRIPT} $BASE/$THIS | md5sum /dev/stdin | awk '{print $1}'`
++#echo "Verifying archive integrity..."
++#if [[ "$CHECKSUM" != "$MD5SUM" ]]; then
++#	echo "Archive integrity check failed. This installer is corrupted."
++#	exit
++#fi
+ 
+ # extract archive and invoke installer
+ echo "Extracting archive..."
+@@ -100,15 +100,15 @@
+ 	exit
+ fi
+ 
+-echo "Running installer..."
+-cd installer
+-bash -i ./installer.sh
++#echo "Running installer..."
++#cd installer
++#bash -i ./installer.sh
+ 
+ # clean up
+-cd $BASE
+-rm -rf $TMPDIR
++#cd $BASE
++#rm -rf $TMPDIR
++echo "installed dir: $(pwd)"
+ 
+-clear
+ exit
+ 
+ ==END_OF_SCRIPT==
