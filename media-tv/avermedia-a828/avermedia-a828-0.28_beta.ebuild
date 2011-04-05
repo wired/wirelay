@@ -51,4 +51,6 @@ src_prepare() {
 	cp "${FILESDIR}"/install_prebuilt.sh .
 	# moving prebuilt stuff to place
 	./install_prebuilt.sh "${S}"/drv/installer $KV_DIR $KV_OUT_DIR
+
+	BUILD_PARAMS="KERNELDIR=\"${KV_DIR}\""
 }
