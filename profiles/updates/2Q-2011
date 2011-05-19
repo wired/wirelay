@@ -1,0 +1,2 @@
+move dev-libs/oocairo dev-lua/oocairo
+move dev-libs/oopango dev-lua/oopango
