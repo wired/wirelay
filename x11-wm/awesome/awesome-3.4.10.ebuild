@@ -1,43 +1,40 @@
-# Copyright 1999-2010 Gentoo Foundation
+# Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-wm/awesome/awesome-3.4.5.ebuild,v 1.1 2010/05/12 13:47:21 matsuu Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-wm/awesome/awesome-3.4.10.ebuild,v 1.1 2011/05/16 21:05:05 robbat2 Exp $
 
 EAPI="3"
-inherit git cmake-utils eutils
-
-EGIT_REPO_URI="git://git.naquadah.org/awesome.git"
+CMAKE_MIN_VERSION="2.8"
+inherit cmake-utils eutils
 
 DESCRIPTION="A dynamic floating and tiling window manager"
 HOMEPAGE="http://awesome.naquadah.org/"
-SRC_URI=""
+SRC_URI="http://awesome.naquadah.org/download/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="~amd64 ~ppc ~ppc64 ~x86 ~x86-fbsd"
 IUSE="dbus doc elibc_FreeBSD"
 
-RDEPEND="
-	>=dev-lang/lua-5.1
+COMMON_DEPEND=">=dev-lang/lua-5.1
 	dev-libs/libev
 	>=dev-libs/libxdg-basedir-1
-	dev-lua/oocairo
-	dev-lua/oopango
 	media-libs/imlib2[png]
 	x11-libs/cairo[xcb]
-	|| ( >x11-libs/libX11-1.3.5 <=x11-libs/libX11-1.3.5[xcb] )
-	>=x11-libs/libxcb-1.4
+	|| ( <x11-libs/libX11-1.3.99.901[xcb] >=x11-libs/libX11-1.3.99.901 )
+	>=x11-libs/libxcb-1.6
 	>=x11-libs/pango-1.19.3
-	>=x11-libs/startup-notification-0.10
-	>=x11-libs/xcb-util-0.3.6
+	>=x11-libs/startup-notification-0.10_p20110426
+	>=x11-libs/xcb-util-0.3.8
 	dbus? ( >=sys-apps/dbus-1 )
 	elibc_FreeBSD? ( dev-libs/libexecinfo )"
 
-DEPEND="${RDEPEND}
+# graphicsmagick's 'convert -channel' has no Alpha support, bug #352282
+DEPEND="${COMMON_DEPEND}
 	>=app-text/asciidoc-8.4.5
 	app-text/xmlto
 	dev-util/gperf
 	dev-util/pkgconfig
-	|| ( media-gfx/imagemagick[png] media-gfx/graphicsmagick[imagemagick,png] )
+	media-gfx/imagemagick[png]
 	>=x11-proto/xcb-proto-1.5
 	>=x11-proto/xproto-7.0.15
 	doc? (
@@ -46,7 +43,7 @@ DEPEND="${RDEPEND}
 		media-gfx/graphviz
 	)"
 
-RDEPEND="${RDEPEND}
+RDEPEND="${COMMON_DEPEND}
 	|| (
 		x11-misc/gxmessage
 		x11-apps/xmessage
@@ -59,7 +56,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	|| (
 	( x11-apps/xwininfo
-		|| ( media-gfx/imagemagick media-gfx/graphicsmagick[imagemagick] )
+	  || ( media-gfx/imagemagick media-gfx/graphicsmagick[imagemagick] )
 	)
 	x11-misc/habak
 	media-gfx/feh
@@ -73,10 +70,15 @@ RDEPEND="${RDEPEND}
 
 DOCS="AUTHORS BUGS PATCHES README STYLE"
 
-src_unpack() {
-	git_src_unpack
-	# ugly way to get the git revision
-	echo -n "`git --git-dir="${GIT_DIR}" describe`-gentoo" > ${S}/.version_stamp
+src_prepare() {
+	epatch \
+		"${FILESDIR}/${PN}-3.4.2-backtrace.patch" \
+		"${FILESDIR}/3.4-0001-Update-the-code-following-release-of-xcb-util-0.3.8.patch"
+
+	# kill handling of NET_CURRENT_DESKTOP
+	# temp fix for openoffice bug #109550
+	# doesn't seem to break anything else
+	epatch "${FILESDIR}/${PN}-3.4.3-net-current-desktop-ooo.patch"
 }
 
 src_configure() {
@@ -85,7 +87,7 @@ src_configure() {
 		-DSYSCONFDIR="${EPREFIX}"/etc
 		$(cmake-utils_use_with dbus DBUS)
 		$(cmake-utils_use doc GENERATE_LUADOC)
-	)
+		)
 
 	cmake-utils_src_configure
 }
