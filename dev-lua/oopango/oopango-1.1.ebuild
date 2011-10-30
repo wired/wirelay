@@ -17,6 +17,7 @@ IUSE=""
 
 RDEPEND="
 	>=dev-lang/lua-5.1
+	>=dev-lua/oocairo-1.3
 	x11-libs/pango
 "
 DEPEND="
