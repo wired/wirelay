@@ -1,0 +1,13 @@
+--- libpam/Makefile
++++ libpam/Makefile
+@@ -56,8 +56,8 @@
+ 	               pam_google_authenticator_unittest
+ 
+ google-authenticator: google-authenticator.o base32.o hmac.o sha1.o
+-	$(CC) -g $(DEF_LDFLAGS) $(shell [ -f /usr/lib/libdl.so ] &&           \
+-	      echo " -ldl") -o $@ $+
++	$(CC) -o $@ $+ -g $(DEF_LDFLAGS) $(shell [ -f /usr/lib/libdl.so ] &&           \
++	      echo " -ldl")
+ 
+ demo: demo.o pam_google_authenticator_demo.o base32.o hmac.o sha1.o
+ 	$(CC) -g $(DEF_LDFLAGS) -rdynamic                                     \
