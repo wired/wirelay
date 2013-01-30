@@ -11,7 +11,7 @@ MV=${PV/\.*}
 
 DESCRIPTION="the All-In-One Solution for Remote Access and Support over the Internet"
 HOMEPAGE="http://www.teamviewer.com"
-SRC_URI="http://www.teamviewer.com/download/${PN}_linux.tar.gz -> ${P}.tar.gz"
+SRC_URI="http://www.teamviewer.com/download/version_7x/${PN}_linux.tar.gz -> ${P}.tar.gz"
 
 LICENSE="TeamViewerFebruary2012"
 SLOT="0"
