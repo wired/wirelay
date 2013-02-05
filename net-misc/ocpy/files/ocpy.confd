@@ -1,0 +1,4 @@
+# /etc/conf.d/ocpy
+
+# set this to the user you want ocpy to run as
+OCPY_USER=""

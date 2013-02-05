@@ -1,0 +1,22 @@
+#!/sbin/runscript
+
+depend() {
+	need net
+}
+
+start() {
+	if [[ -z ${OCPY_USER} ]]; then
+		eerror "You need to specify a user in /etc/conf.d/ocpy"
+		exit
+	fi
+	ebegin "Starting ocpy"
+	start-stop-daemon --start --user ${OCPY_USER} --name ocpy \
+		--exec /usr/bin/ocpy.py start
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping ocpy"
+	/usr/bin/ocpy.py stop
+	eend $?
+}
