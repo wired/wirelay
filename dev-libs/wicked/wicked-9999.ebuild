@@ -4,6 +4,8 @@
 
 # created by thewtex 2008 June 17
 
+EAPI="1"
+
 inherit git
 
 EGIT_REPO_URI="git://git.glacicle.com/awesome/wicked.git"
@@ -20,8 +22,6 @@ IUSE=""
 
 RDEPEND="dev-lang/lua"
 DEPEND="${RDEPEND}"
-
-EAPI="1"
 
 src_install()
 {
