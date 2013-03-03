@@ -15,7 +15,7 @@ IUSE="qt4"
 
 DEPEND="
 	sys-libs/gpm
-	qt4? ( x11-libs/qt-gui )
+	qt4? ( dev-qt/qtgui )
 "
 RDEPEND="${DEPEND}"
 
