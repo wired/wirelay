@@ -25,8 +25,8 @@ DEPEND="
 	x11-misc/xdg-utils
 "
 
-RDEPEND="
-	${DEPEND}
+RDEPEND="${DEPEND}
+	x11-misc/dmenu
 "
 
 BINARY="/usr/bin/xdg-open"

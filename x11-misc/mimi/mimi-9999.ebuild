@@ -10,9 +10,8 @@ if [[ ${PV} == *9999* ]]; then
 	KEYWORDS=""
 	SRC_URI=""
 else
-	inherit vcs-snapshot
 	KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
-	SRC_URI=""
+	SRC_URI="http://www.linuxized.com/distfiles/${P}.tar.gz"
 fi
 
 DESCRIPTION="an improved version of xdg-open for users without a DE."
@@ -26,8 +25,8 @@ DEPEND="
 	x11-misc/xdg-utils
 "
 
-RDEPEND="
-	${DEPEND}
+RDEPEND="${DEPEND}
+	x11-misc/dmenu
 "
 
 BINARY="/usr/bin/xdg-open"
