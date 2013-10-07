@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/x11-wm/awesome/awesome-3.4.5.ebuild,v 1.1 2010/05/12 13:47:21 matsuu Exp $
 
 EAPI="3"
-inherit git cmake-utils eutils
+inherit git-2 cmake-utils eutils
 
 EGIT_REPO_URI="git://git.naquadah.org/awesome.git"
 
@@ -20,13 +20,14 @@ RDEPEND="
 	>=dev-lang/lua-5.1
 	dev-libs/libev
 	>=dev-libs/libxdg-basedir-1
+	dev-lua/lgi
 	dev-lua/oocairo
 	dev-lua/oopango
 	media-libs/imlib2[png]
 	x11-libs/cairo[xcb]
 	|| ( >x11-libs/libX11-1.3.5 <=x11-libs/libX11-1.3.5[xcb] )
 	>=x11-libs/libxcb-1.4
-	>=x11-libs/pango-1.19.3
+	>=x11-libs/pango-1.19.3[introspection]
 	>=x11-libs/startup-notification-0.10
 	>=x11-libs/xcb-util-0.3.6
 	dbus? ( >=sys-apps/dbus-1 )
@@ -74,7 +75,7 @@ RDEPEND="${RDEPEND}
 DOCS="AUTHORS BUGS PATCHES README STYLE"
 
 src_unpack() {
-	git_src_unpack
+	git-2_src_unpack
 	# ugly way to get the git revision
 	echo -n "`git --git-dir="${GIT_DIR}" describe`-gentoo" > ${S}/.version_stamp
 }
