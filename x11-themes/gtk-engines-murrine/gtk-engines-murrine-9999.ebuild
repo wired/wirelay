@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit git autotools gnome.org
+inherit git-2 autotools gnome.org
 
 EGIT_REPO_URI="git://git.gnome.org/murrine"
 
