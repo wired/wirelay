@@ -5,7 +5,7 @@
 EAPI="2"
 
 EGIT_REPO_URI="git://git.gnome.org/libsoup"
-inherit autotools eutils gnome2 git
+inherit autotools eutils gnome2 git-2
 
 DESCRIPTION="An HTTP library implementation in C"
 HOMEPAGE="http://www.gnome.org/"
@@ -41,7 +41,7 @@ pkg_setup() {
 
 src_prepare() {
 	gnome2_src_prepare
-	git_src_prepare
+	git-2_src_prepare
 
 	# missing in trunk
 	cp "${FILESDIR}"/gtk-doc.make . || die "gtk-doc.make cp failed"
