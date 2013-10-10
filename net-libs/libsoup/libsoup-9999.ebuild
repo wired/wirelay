@@ -41,7 +41,6 @@ pkg_setup() {
 
 src_prepare() {
 	gnome2_src_prepare
-	git-2_src_prepare
 
 	# missing in trunk
 	cp "${FILESDIR}"/gtk-doc.make . || die "gtk-doc.make cp failed"
