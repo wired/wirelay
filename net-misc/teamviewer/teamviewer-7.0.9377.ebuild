@@ -1,4 +1,4 @@
-# Copyright 1999-2010 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -11,9 +11,9 @@ MV=${PV/\.*}
 
 DESCRIPTION="the All-In-One Solution for Remote Access and Support over the Internet"
 HOMEPAGE="http://www.teamviewer.com"
-SRC_URI="http://www.teamviewer.com/download/${PN}_linux.tar.gz -> ${P}.tar.gz"
+SRC_URI="http://www.teamviewer.com/download/version_7x/${PN}_linux.tar.gz -> ${P}.tar.gz"
 
-LICENSE="TeamViewerNovember2011"
+LICENSE="TeamViewerFebruary2012"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
